@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960487896050",
+    "project_id": "macrotrackermobile-eeb3e",
+    "storage_bucket": "macrotrackermobile-eeb3e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960487896050:android:977c1e80fa887aed91b16b",
+        "android_client_info": {
+          "package_name": "com.example.calorie_tracker_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkyIsf5G0p0PI3gSW0MI17ioBAnJXjxtE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
