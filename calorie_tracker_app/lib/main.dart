@@ -212,6 +212,7 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   String? email;
   String? password;
+  String? repeatPassword;
   String? error;
   final _formKey = GlobalKey<FormState>();
   @override
@@ -251,10 +252,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   decoration:
                       const InputDecoration(hintText: "Confirm password"),
                   obscureText: true,
-                  onChanged: (value) => password = value,
+                  onChanged: (value) => repeatPassword = value,
                   validator: (value) {
                     if (value == null || value.length < 8) {
                       return 'Your password must contain at least 8 characters.';
+                    } else if (password != repeatPassword) {
+                      return "Your passwords must match";
                     }
                     return null; // Returning null means "no issues"
                   }),
