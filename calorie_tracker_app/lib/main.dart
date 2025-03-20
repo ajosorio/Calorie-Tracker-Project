@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,50 +15,113 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text("Macro Mate")),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Welcome ${FirebaseAuth.instance.currentUser?.email}"),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AboutScreen()
-                        // runApp(const AboutScreen());
-                        ),
-                  );
-                },
-                child: Text("Go to About Screen"),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // signOut() doesn't return anything, so we don't need to await
-                  // for it to finish unless we really want to.
-                  FirebaseAuth.instance.signOut();
+    // set macros here for pie chart
+    final Map<String, double> dataMap = {
+      "Protein": 40,
+      "Fats": 25,
+      "Carbs": 35,
+    };
+    // get values for the dataMap
+    final double protein = dataMap["Protein"]!;
+    final double fats = dataMap["Fats"]!;
+    final double carbs = dataMap["Carbs"]!;
+    // calc calories using standard values
+    final double calories = (protein * 4) + (carbs * 4) + (fats * 9);
 
-                  // This navigator call clears the Navigation stack and takes
-                  // them to the login screen because we don't want users
-                  // "going back" in our app after they log out.
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                      (route) => false);
-                },
-                child: const Text("Logout"),
-              )
+    return Scaffold(
+      appBar: AppBar(title: const Text("Macro Mate")),
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          // this row contains the pie chart and macro values
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // pie chart
+              SizedBox(
+                height: 150,
+                width: 150,
+                child: _MyPieChart(dataMap: dataMap),
+              ),
+              const SizedBox(width: 20),
+              // colummn displaying macro breakdown as text
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Protein: ${protein.toInt()}g",
+                      style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 5),
+                  Text("Carbs: ${carbs.toInt()}g",
+                      style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 5),
+                  Text("Fats: ${fats.toInt()}g",
+                      style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 5),
+                  Text("Calories: ${calories.toInt()} kcal",
+                      style: const TextStyle(fontSize: 16)),
+                ],
+              ),
             ],
           ),
+          const SizedBox(height: 20),
+          // list of meal breakdown
+          Column(
+            children: [
+              _buildMealDropdown("Meal 1"),
+              _buildMealDropdown("Meal 2"),
+              _buildMealDropdown("Meal 3"),
+              _buildMealDropdown("Meal 4"),
+            ],
+          ),
+        ],
+      ),
+      // bottom nav bar with icons
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+                icon: const Icon(Icons.home, color: Colors.black),
+                onPressed: () {}),
+            IconButton(
+                icon: const Icon(Icons.track_changes, color: Colors.black),
+                onPressed: () {}),
+            IconButton(
+                icon: const Icon(Icons.calendar_today, color: Colors.black),
+                onPressed: () {}),
+            IconButton(
+                icon: const Icon(Icons.settings, color: Colors.black),
+                onPressed: () {}),
+          ],
         ),
       ),
     );
   }
+}
+
+// function to create dropdown menu
+Widget _buildMealDropdown(String mealName) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // display meal name
+        Text(mealName, style: const TextStyle(fontSize: 16)),
+        // dropdown to select a meal
+        DropdownButton<String>(
+          items: const [
+            DropdownMenuItem(value: "Option 1", child: Text("Option 1")),
+            DropdownMenuItem(value: "Option 2", child: Text("Option 2")),
+          ],
+          onChanged: (value) {},
+          hint: const Text("Select"),
+        ),
+      ],
+    ),
+  );
 }
 
 class AboutScreen extends StatelessWidget {
@@ -321,5 +385,43 @@ class _SignupScreenState extends State<SignupScreen> {
       // the updated error text.
       setState(() {});
     }
+  }
+}
+
+// stateless widget to create pie chart
+class _MyPieChart extends StatelessWidget {
+  // data for pie chart
+  final Map<String, double> dataMap;
+
+  const _MyPieChart({super.key, required this.dataMap});
+
+  @override
+  Widget build(BuildContext context) {
+    // defines colors for pie chart
+    final List<Color> colorList = [
+      const Color(0xff3398F6), // Protein
+      const Color(0xffFA4A42), // Fats
+      const Color(0xffFE9539), // Carbs
+    ];
+
+    return PieChart(
+      // macro data for visualization
+      dataMap: dataMap,
+      chartRadius: 200,
+      centerText: "Macros",
+      ringStrokeWidth: 16,
+      animationDuration: const Duration(seconds: 2),
+      // options for displaying chart values
+      chartValuesOptions: const ChartValuesOptions(
+        showChartValues: true,
+        showChartValuesOutside: false,
+        showChartValuesInPercentage: false,
+      ),
+      // options for chart legend
+      legendOptions: const LegendOptions(
+        showLegends: false,
+      ),
+      colorList: colorList,
+    );
   }
 }
