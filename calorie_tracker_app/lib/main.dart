@@ -6,7 +6,7 @@ import 'package:pie_chart/pie_chart.dart';
 
 import 'package:calorie_tracker_app/food.dart';
 import 'package:calorie_tracker_app/meal.dart';
-import 'PreviouslyLoggedDays.dart';
+import 'previously_logged_days.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,75 +33,89 @@ class HomeScreen extends StatelessWidget {
     final double calories = (protein * 4) + (carbs * 4) + (fats * 9);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Macro Mate")),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const SizedBox(height: 20),
-          // this row contains the pie chart and macro values
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // pie chart
-              SizedBox(
-                height: 150,
-                width: 150,
-                child: _MyPieChart(dataMap: dataMap),
-              ),
-              const SizedBox(width: 20),
-              // colummn displaying macro breakdown as text
-              Column(
+      appBar: AppBar(
+        title: const Text(
+          "Macro Mate",
+          style: TextStyle(color: Colors.white, fontSize: 28),
+        ),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: ListView(children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 20, 0, 30),
+              child:
+                  // this row contains the pie chart and macro values
+                  Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Protein: ${protein.toInt()}g",
-                      style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 5),
-                  Text("Carbs: ${carbs.toInt()}g",
-                      style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 5),
-                  Text("Fats: ${fats.toInt()}g",
-                      style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 5),
-                  Text("Calories: ${calories.toInt()} kcal",
-                      style: const TextStyle(fontSize: 16)),
+                  // pie chart
+                  SizedBox(
+                    height: 250,
+                    width: 230,
+                    child: _MyPieChart(dataMap: dataMap),
+                  ),
+                  const SizedBox(width: 20),
+                  // colummn displaying macro breakdown as text
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Protein: ${protein.toInt()}g",
+                          style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 5),
+                      Text("Carbs: ${carbs.toInt()}g",
+                          style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 5),
+                      Text("Fats: ${fats.toInt()}g",
+                          style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 5),
+                      Text("Calories: ${calories.toInt()} kcal",
+                          style: const TextStyle(fontSize: 14)),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          // list of meal breakdown
-          Column(
-            children: [
-              _buildMealDropdown("Meal 1"),
-              _buildMealDropdown("Meal 2"),
-              _buildMealDropdown("Meal 3"),
-              _buildMealDropdown("Meal 4"),
-            ],
-          ),
-        ],
-      ),
+            ),
+            Divider(
+              thickness: 5,
+              color: Colors.blueGrey,
+            ),
+            // list of meal breakdown
+            Column(
+              children: [
+                _buildMealDropdown("Meal 1"),
+                _buildMealDropdown("Meal 2"),
+                _buildMealDropdown("Meal 3"),
+                _buildMealDropdown("Meal 4"),
+              ],
+            ),
+          ],
+        ),
+      ]),
       // bottom nav bar with icons
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+        color: Colors.blueAccent,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-                icon: const Icon(Icons.home, color: Colors.black),
+                icon: const Icon(Icons.home, color: Colors.white),
                 onPressed: () {}),
             IconButton(
-                icon: const Icon(Icons.track_changes, color: Colors.black),
+                icon: const Icon(Icons.track_changes, color: Colors.white),
                 onPressed: () {}),
             IconButton(
-                icon: const Icon(Icons.calendar_today, color: Colors.black),
+                icon: const Icon(Icons.calendar_today, color: Colors.white),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
                           const PreviouslyLoggedDaysScreen()));
                 }),
             IconButton(
-                icon: const Icon(Icons.settings, color: Colors.black),
+                icon: const Icon(Icons.settings, color: Colors.white),
                 onPressed: () {}),
           ],
         ),
@@ -114,12 +128,28 @@ class HomeScreen extends StatelessWidget {
 Widget _buildMealDropdown(String mealName) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    child: ExpansionTile(
+      title: Text(mealName),
       children: [
         // display meal name
-        Text(mealName, style: const TextStyle(fontSize: 16)),
         // dropdown to select a meal
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            // this will be set to print all the food objects for the respective meal
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              return ListTile(
+                tileColor: Colors.transparent,
+                title: Text("food"),
+                subtitle: const Text("F: 5 P: 21 C: 34"),
+                leading: Text("IDK"),
+                // This will icon will display a dropdown to delete a food item
+                trailing: Icon(Icons.delete_outlined),
+              );
+            },
+          ),
+        ),
         DropdownButton<String>(
           items: const [
             DropdownMenuItem(value: "Option 1", child: Text("Option 1")),
@@ -408,9 +438,9 @@ class _MyPieChart extends StatelessWidget {
   Widget build(BuildContext context) {
     // defines colors for pie chart
     final List<Color> colorList = [
-      const Color(0xff3398F6), // Protein
-      const Color(0xffFA4A42), // Fats
-      const Color(0xffFE9539), // Carbs
+      const Color.fromARGB(255, 10, 134, 251), // Protein
+      const Color.fromARGB(255, 129, 181, 233), // Fats
+      const Color.fromARGB(255, 85, 214, 186), // Carbs
     ];
 
     return PieChart(
