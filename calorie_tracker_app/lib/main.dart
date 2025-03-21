@@ -35,6 +35,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Macro Mate")),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           const SizedBox(height: 20),
           // this row contains the pie chart and macro values
