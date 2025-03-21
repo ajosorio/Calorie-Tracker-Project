@@ -4,6 +4,9 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pie_chart/pie_chart.dart';
 
+import 'package:calorie_tracker_app/food.dart';
+import 'package:calorie_tracker_app/meal.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
