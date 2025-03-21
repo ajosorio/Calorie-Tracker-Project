@@ -393,7 +393,7 @@ class _MyPieChart extends StatelessWidget {
   // data for pie chart
   final Map<String, double> dataMap;
 
-  const _MyPieChart({super.key, required this.dataMap});
+  const _MyPieChart({required this.dataMap});
 
   @override
   Widget build(BuildContext context) {
