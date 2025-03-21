@@ -6,6 +6,7 @@ import 'package:pie_chart/pie_chart.dart';
 
 import 'package:calorie_tracker_app/food.dart';
 import 'package:calorie_tracker_app/meal.dart';
+import 'PreviouslyLoggedDays.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -93,7 +94,11 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {}),
             IconButton(
                 icon: const Icon(Icons.calendar_today, color: Colors.black),
-                onPressed: () {}),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          const PreviouslyLoggedDaysScreen()));
+                }),
             IconButton(
                 icon: const Icon(Icons.settings, color: Colors.black),
                 onPressed: () {}),
