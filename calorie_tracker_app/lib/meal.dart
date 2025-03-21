@@ -3,7 +3,8 @@ import 'package:calorie_tracker_app/food.dart';
 class Meal {
   // Will hold food objects per meal
   /// all macronutrient values will be in grams unless specified/ i.e. sodium will likely be in milligrams
-  
+
+
   // ignore: prefer_final_fields
   List<Food> _foodList = [];
   double _protein = 0;
@@ -11,6 +12,8 @@ class Meal {
   double _fat = 0;
   double _calories = 0;
   String? _mealName;
+
+    Meal(this._mealName);
   
   List get getFoodList{
     return _foodList;
