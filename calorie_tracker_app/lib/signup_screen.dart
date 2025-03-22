@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'main.dart';
 
-
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -23,6 +22,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -31,8 +31,21 @@ class _SignupScreenState extends State<SignupScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
-                  decoration:
-                      const InputDecoration(hintText: 'Enter your email'),
+                  cursorColor: Colors.teal,
+                  decoration: const InputDecoration(
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                    hintText: 'Enter your email',
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.teal),
+                    ),
+                  ),
                   maxLength: 64,
                   onChanged: (value) => email = value,
                   validator: (value) {
@@ -42,8 +55,21 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null; // Returning null means "no issues"
                   }),
               TextFormField(
-                  decoration:
-                      const InputDecoration(hintText: "Enter a password"),
+                  cursorColor: Colors.teal,
+                  decoration: const InputDecoration(
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                    hintText: "Enter a password",
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.teal),
+                    ),
+                  ),
                   obscureText: true,
                   onChanged: (value) => password = value,
                   validator: (value) {
@@ -53,8 +79,21 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null; // Returning null means "no issues"
                   }),
               TextFormField(
-                  decoration:
-                      const InputDecoration(hintText: "Confirm password"),
+                  cursorColor: Colors.teal,
+                  decoration: const InputDecoration(
+                    hintStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                    hintText: "Confirm password",
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.teal),
+                    ),
+                  ),
                   obscureText: true,
                   onChanged: (value) => repeatPassword = value,
                   validator: (value) {
@@ -67,12 +106,39 @@ class _SignupScreenState extends State<SignupScreen> {
                   }),
               const SizedBox(height: 16),
               ElevatedButton(
-                  child: const Text('Sign up'),
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       trySignup();
                     }
                   }),
+              const SizedBox(height: 12),
+
+              // cancel button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.grey),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  ); // Go back to previous screen
+                },
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: Colors.teal,
+                  ),
+                ),
+              ),
               if (error != null)
                 Text(
                   "Error: $error",

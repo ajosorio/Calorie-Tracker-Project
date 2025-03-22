@@ -6,18 +6,44 @@ class PreviouslyLoggedDaysScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Previously Logged Days")),
-      body: ListView.builder(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+          title: const Text(
+            "Previously Logged Days",
+            style: TextStyle(color: Colors.white, fontSize: 28),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.teal),
+      body: ListView.separated(
         itemCount: 15,
         itemBuilder: (context, index) {
           return ListTile(
-            tileColor: Colors.white,
-            title: Text("Some meal"),
-            subtitle: const Text("Some text"),
-            leading: Text("A date"),
-            trailing: Icon(Icons.more_vert),
+            tileColor: Colors.black,
+            title: Text(
+              "Some meal",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            subtitle: const Text(
+              "Some text",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            leading: Text(
+              "A date",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            trailing: Icon(
+              Icons.more_vert,
+              color: Colors.white,
+            ),
           );
         },
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),
     );
   }
