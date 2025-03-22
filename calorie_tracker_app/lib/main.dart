@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,15 +11,26 @@ import 'package:calorie_tracker_app/meal.dart';
 import 'previously_logged_days.dart';
 import 'signup_screen.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MaterialApp(title: "Firebase Example", home: LoginScreen()));
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Meal> meals = [
+    Meal("Breakfast"),
+    Meal("Lunch"),
+    Meal("Dinner"),
+    Meal("Snacks")
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -84,18 +95,18 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             Divider(
-              thickness: 5,
-              color: Colors.blueGrey,
+              thickness: 7,
+              color: Colors.lightBlueAccent,
             ),
             // list of meal breakdown
-            Column(
-              children: [
-                _buildMealDropdown("Meal 1"),
-                _buildMealDropdown("Meal 2"),
-                _buildMealDropdown("Meal 3"),
-                _buildMealDropdown("Meal 4"),
-              ],
-            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return mealDropdown("${meals[index].getMealName}");
+              },
+            )
           ],
         ),
       ]),
@@ -129,11 +140,15 @@ class HomeScreen extends StatelessWidget {
 }
 
 // function to create dropdown menu
-Widget _buildMealDropdown(String mealName) {
+Widget mealDropdown(String mealName) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
     child: ExpansionTile(
-      title: Text(mealName),
+      title: Text(
+        mealName,
+        style: TextStyle(
+            color: Colors.grey[700], fontSize: 22, fontWeight: FontWeight.w600),
+      ),
       children: [
         // display meal name
         // dropdown to select a meal
