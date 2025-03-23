@@ -173,8 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {}),
             IconButton(
               icon: const Icon(
-                Icons.track_changes,
+                Icons.add,
                 color: Colors.white,
+                size: 32,
               ),
               onPressed: () {
                 Navigator.of(context).push(

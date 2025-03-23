@@ -4,3 +4,4 @@ calorie_tracker_app/ios/Flutter/AppFrameworkInfo.plist
 calorie_tracker_app/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme
 
 calorie_tracker_app/ios/Podfile
+calorie_tracker_app/ios/Podfile.lock
