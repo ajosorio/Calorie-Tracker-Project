@@ -224,6 +224,8 @@ Widget mealDropdown(String mealName) {
       vertical: 10,
     ),
     child: ExpansionTile(
+      collapsedIconColor: Colors.white,
+      iconColor: Colors.white,
       title: Text(
         mealName,
         style: TextStyle(
