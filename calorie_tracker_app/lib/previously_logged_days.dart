@@ -8,15 +8,22 @@ class PreviouslyLoggedDaysScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-          title: const Text(
-            "Previously Logged Days",
-            style: TextStyle(color: Colors.white, fontSize: 28),
+        title: const Text(
+          "Previously Logged Days",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
           ),
-          centerTitle: true,
-          backgroundColor: Colors.teal),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.teal,
+      ),
       body: ListView.separated(
         itemCount: 15,
-        itemBuilder: (context, index) {
+        itemBuilder: (
+          context,
+          index,
+        ) {
           return ListTile(
             tileColor: Colors.black,
             title: Text(
@@ -43,7 +50,11 @@ class PreviouslyLoggedDaysScreen extends StatelessWidget {
             ),
           );
         },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
+        separatorBuilder: (
+          BuildContext context,
+          int index,
+        ) =>
+            const Divider(),
       ),
     );
   }

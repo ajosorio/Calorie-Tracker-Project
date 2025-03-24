@@ -18,15 +18,13 @@ class Food {
     double sugar = 0,
     double fiber = 0,
     String foodName = "food",
-  })  : 
-        _protein = protein,
+  })  : _protein = protein,
         _carbs = carbs,
         _fat = fat,
         _sodium = sodium,
         _sugar = sugar,
         _fiber = fiber,
         _foodName = foodName;
-
 
   String get foodName => _foodName;
   set foodName(String value) => _foodName = value;
@@ -61,7 +59,3 @@ class Food {
     };
   }
 }
-
-
-
-

@@ -335,7 +335,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.teal),
+                    borderSide: BorderSide(
+                      color: Colors.teal,
+                    ),
                   ),
                   hintText: 'Enter your email',
                   hintStyle: TextStyle(
@@ -377,7 +379,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null; // Returning null means "no issues"
                   }),
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
               ElevatedButton(
                   child: const Text(
                     'Login',
@@ -483,7 +487,9 @@ class _MyPieChart extends StatelessWidget {
       chartRadius: 200,
       centerText: "Macros",
       ringStrokeWidth: 16,
-      animationDuration: const Duration(seconds: 2),
+      animationDuration: const Duration(
+        seconds: 2,
+      ),
       // options for displaying chart values
       chartValuesOptions: const ChartValuesOptions(
         showChartValues: true,
@@ -507,13 +513,13 @@ class AddFoodScreen extends StatefulWidget {
 }
 
 class _AddFoodScreenState extends State<AddFoodScreen> {
-  // Controllers for user input
+  // controllers for user input
   final TextEditingController foodNameController = TextEditingController();
   final TextEditingController fatController = TextEditingController();
   final TextEditingController proteinController = TextEditingController();
   final TextEditingController carbsController = TextEditingController();
 
-  // Favorites list and selected favorite
+  // favorites list and selected favorite
   final List<String> favoriteFoods = [];
   String? selectedFavorite;
 
@@ -541,11 +547,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         favoriteFoods.add(foodName);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$foodName added to favorites')),
+        SnackBar(
+          content: Text(
+            '$foodName added to favorites',
+          ),
+        ),
       );
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
@@ -574,7 +585,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   DropdownButton<String>(
                     value: selectedFavorite,
                     hint: const Text(
@@ -586,7 +599,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                     items: favoriteFoods.map((String food) {
                       return DropdownMenuItem<String>(
                         value: food,
-                        child: Text(food),
+                        child: Text(
+                          food,
+                        ),
                       );
                     }).toList(),
                     onChanged: _onFavoriteSelected,
@@ -625,7 +640,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       // TODO: Add scan functionality
@@ -667,7 +684,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(
+                height: 10,
+              ),
 
               const Text(
                 "Protein",

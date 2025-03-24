@@ -43,7 +43,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
+                      borderSide: BorderSide(
+                        color: Colors.teal,
+                      ),
                     ),
                   ),
                   maxLength: 64,
@@ -67,7 +69,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
+                      borderSide: BorderSide(
+                        color: Colors.teal,
+                      ),
                     ),
                   ),
                   obscureText: true,
@@ -91,7 +95,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.teal),
+                      borderSide: BorderSide(
+                        color: Colors.teal,
+                      ),
                     ),
                   ),
                   obscureText: true,
@@ -104,7 +110,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     }
                     return null; // Returning null means "no issues"
                   }),
-              const SizedBox(height: 16),
+              const SizedBox(
+                height: 16,
+              ),
               ElevatedButton(
                   child: const Text(
                     'Sign up',
@@ -117,13 +125,17 @@ class _SignupScreenState extends State<SignupScreen> {
                       trySignup();
                     }
                   }),
-              const SizedBox(height: 12),
+              const SizedBox(
+                height: 12,
+              ),
 
               // cancel button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.grey),
+                  side: const BorderSide(
+                    color: Colors.grey,
+                  ),
                 ),
                 onPressed: () {
                   Navigator.of(context).push(
@@ -142,7 +154,10 @@ class _SignupScreenState extends State<SignupScreen> {
               if (error != null)
                 Text(
                   "Error: $error",
-                  style: TextStyle(color: Colors.red[800], fontSize: 12),
+                  style: TextStyle(
+                    color: Colors.red[800],
+                    fontSize: 12,
+                  ),
                 )
             ],
           ),
