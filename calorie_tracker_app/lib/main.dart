@@ -241,7 +241,7 @@ Widget mealDropdown(String mealName) {
         // dropdown to select a meal
         SizedBox(
           height: 200,
-          child: ListView.builder(
+          child: ListView.separated(
             // this will be set to print all the food objects for the respective meal
             itemCount: 5,
             itemBuilder: (context, index) {
@@ -266,6 +266,11 @@ Widget mealDropdown(String mealName) {
                 ),
               );
             },
+            separatorBuilder: (
+              BuildContext context,
+              int index,
+            ) =>
+                const Divider(),
           ),
         ),
       ],
@@ -506,4 +511,3 @@ class _MyPieChart extends StatelessWidget {
     );
   }
 }
-
