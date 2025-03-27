@@ -21,6 +21,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   int? protein;
   int? carbs;
   int? fat;
+  final _formKey = GlobalKey<FormState>();
 
   // favorites list and selected favorite
   final List<String> favoriteFoods = [];
@@ -32,7 +33,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
 
     setState(() {
       selectedFavorite = value;
-      foodNameController.text = value;
+      // foodNameController.text = value;
 
       // Example: You can also load macros if you saved them with food later
       // For now, just fill in dummy values when selecting a favorite
@@ -74,6 +75,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         backgroundColor: Colors.teal,
       ),
       body: Form(
+        key: _formKey,
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: SingleChildScrollView(
@@ -138,6 +140,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                         onChanged: (value) {
                           // TODO: Handle meal selection
                           mealSelction = value;
+                          
                         },
                       ),
                     )
@@ -171,9 +174,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             ),
                           ),
                         ),
-                        onChanged: (value) {
-                          foodName = value;
-                        },
+                        onChanged: (value) {},
                       ),
                     ),
                     const SizedBox(
@@ -280,7 +281,24 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // TODO: Add log functionality
+                        foodName = foodNameController.text;
+                        fat = int.parse(fatController.text);
+                        protein = int.parse(proteinController.text);
+                        carbs = int.parse(carbsController.text);
+
+                        _formKey.currentState?.reset();
+
+                        // Dispose of controllers after use
+                        // foodNameController.dispose();
+                        // fatController.dispose();
+                        // proteinController.dispose();
+                        // carbsController.dispose();
+
+                        // TODO: Add log functionality... add to database. Do necessary local actions
+                        // call a method here to add food to the database
+                        // questions for professor, is this a good place to instantiate a food object, or when it comes back from the db?
+                        print(
+                            'meal: $mealSelction, name: $foodName, carbs: $carbs, protein: $protein, fat: $fat');
                       },
                       child: const Text(
                         "Log",
