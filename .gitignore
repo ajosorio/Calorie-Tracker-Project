@@ -5,3 +5,4 @@ calorie_tracker_app/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcschem
 
 calorie_tracker_app/ios/Podfile
 calorie_tracker_app/ios/Podfile.lock
+calorie_tracker_app/ios/pubspec.lock

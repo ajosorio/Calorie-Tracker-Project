@@ -2,21 +2,21 @@
 
 class Food {
   // A class to model food objects, contains information relating to nutrient values
-  double _protein = 0;
-  double _carbs = 0;
-  double _fat = 0;
-  double _sodium = 0;
-  double _sugar = 0;
-  double _fiber = 0;
+  int _protein = 0;
+  int _carbs = 0;
+  int _fat = 0;
+  int _sodium = 0;
+  int _sugar = 0;
+  int _fiber = 0;
   String _foodName = "food";
 
   Food({
-    double protein = 0,
-    double carbs = 0,
-    double fat = 0,
-    double sodium = 0,
-    double sugar = 0,
-    double fiber = 0,
+    int protein = 0,
+    int carbs = 0,
+    int fat = 0,
+    int sodium = 0,
+    int sugar = 0,
+    int fiber = 0,
     String foodName = "food",
   })  : _protein = protein,
         _carbs = carbs,
@@ -29,23 +29,23 @@ class Food {
   String get foodName => _foodName;
   set foodName(String value) => _foodName = value;
 
-  double get protein => _protein;
-  set protein(double value) => _protein = value;
+  int get protein => _protein;
+  set protein(int value) => _protein = value;
 
-  double get carbs => _carbs;
-  set carbs(double value) => _carbs = value;
+  int get carbs => _carbs;
+  set carbs(int value) => _carbs = value;
 
-  double get fat => _fat;
-  set fat(double value) => _fat = value;
+  int get fat => _fat;
+  set fat(int value) => _fat = value;
 
-  double get sodium => _sodium;
-  set sodium(double value) => _sodium = value;
+  int get sodium => _sodium;
+  set sodium(int value) => _sodium = value;
 
-  double get sugar => _sugar;
-  set sugar(double value) => _sugar = value;
+  int get sugar => _sugar;
+  set sugar(int value) => _sugar = value;
 
-  double get fiber => _fiber;
-  set fiber(double value) => _fiber = value;
+  int get fiber => _fiber;
+  set fiber(int value) => _fiber = value;
 
   Map<String, dynamic> foodDict() {
     return {

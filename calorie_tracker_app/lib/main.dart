@@ -91,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       List<Meal> fetchedMeals = [];
       for (var mealDoc in mealsSnapshot.docs) {
+        List<Food> foodList = [];
         final mealName = mealDoc.id;
 
         final foodSnapshot = await FirebaseFirestore.instance
@@ -106,7 +107,17 @@ class _HomeScreenState extends State<HomeScreen> {
         final foods =
             foodSnapshot.docs.map((foodDoc) => foodDoc.data()).toList();
 
-        fetchedMeals.add(Meal(mealName, foods));
+        for (var food in foods) {
+          print(food['foodName']);
+
+          foodList.add(Food(
+              foodName: food['foodName'],
+              protein: food['protein'],
+              carbs: food['carbs'],
+              fat: food['fat']));
+        }
+
+        fetchedMeals.add(Meal(mealName, foodList));
       }
       setState(() {
         meals = fetchedMeals;
@@ -120,11 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     for (var meal in meals) {
       print(meal.getFoodList);
-    }
-
-    // TODO: HERE HERE HERE
-    if (meals.isNotEmpty && meals[0].getFoodList.isNotEmpty) {
-      print(meals[0].getFoodList[0].keys);
     }
 
     // set macros here for pie chart

@@ -5,7 +5,7 @@ class Meal {
   /// all macronutrient values will be in grams unless specified/ i.e. sodium will likely be in milligrams
 
   // ignore: prefer_final_fields
-  List<Map> _foodList = [];
+  List<Food> _foodList = [];
   double _protein = 0;
   double _carbs = 0;
   double _fat = 0;
@@ -14,7 +14,7 @@ class Meal {
 
   Meal(this._mealName, this._foodList);
 
-  List<Map> get getFoodList {
+  List<Food> get getFoodList {
     return _foodList;
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 Widget mealDropdown(String mealName, List<dynamic> foods) {
   // foods = List.from(foods);
   // print(foods[0].foodName);
@@ -30,26 +29,34 @@ Widget mealDropdown(String mealName, List<dynamic> foods) {
             // this will be set to print all the food objects for the respective meal
             itemCount: foods.length,
             itemBuilder: (context, index) {
-              return ListTile(
-                tileColor: Colors.black,
-                title: Text(
-                  foods.isNotEmpty ? foods[index]['foodName'] : 'text',
-                  style: TextStyle(color: Colors.white),
-                ),
-                subtitle: const Text(
-                  "F: 5 P: 21 C: 34",
-                  style: TextStyle(color: Colors.white),
-                ),
-                leading: Text(
-                  "IDK",
-                  style: TextStyle(color: Colors.white),
-                ),
-                // This will icon will display a dropdown to delete a food item
-                trailing: Icon(
-                  Icons.delete_outlined,
-                  color: Colors.white,
-                ),
-              );
+              if (foods.isNotEmpty) {
+                return ListTile(
+                  tileColor: Colors.black,
+                  title: Text(
+                    foods[index].foodName,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17),
+                  ),
+                  subtitle: Text(
+                    "F: ${foods[index].fat} P: ${foods[index].protein} C: ${foods[index].carbs}",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  leading: Text(
+                    "IDK",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  // This will icon will display a dropdown to delete a food item
+                  trailing: Icon(
+                    Icons.delete_outlined,
+                    color: Colors.white,
+                  ),
+                );
+              }
             },
             separatorBuilder: (
               BuildContext context,
