@@ -32,6 +32,9 @@ class _SignupScreenState extends State<SignupScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                   cursorColor: Colors.teal,
                   decoration: const InputDecoration(
                     hintStyle: TextStyle(
@@ -58,6 +61,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null; // Returning null means "no issues"
                   }),
               TextFormField(
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                   cursorColor: Colors.teal,
                   decoration: const InputDecoration(
                     hintStyle: TextStyle(
@@ -84,6 +90,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null; // Returning null means "no issues"
                   }),
               TextFormField(
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                   cursorColor: Colors.teal,
                   decoration: const InputDecoration(
                     hintStyle: TextStyle(

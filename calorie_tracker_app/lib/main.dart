@@ -38,11 +38,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!firebaseReady) return const Center(child: CircularProgressIndicator());
-
-    // currentUser will be null if no one is signed in.
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) return const HomeScreen();
     return const LoginScreen();
   }
 }
@@ -71,7 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
     fetchFoods();
   }
 
@@ -89,9 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
           .collection('meals')
           .get();
 
-      List<Meal> fetchedMeals = [];
+      List<Meal> allMeals = [
+        Meal("Breakfast", []),
+        Meal("Lunch", []),
+        Meal("Dinner", []),
+        Meal("Snacks", []),
+      ];
       for (var mealDoc in mealsSnapshot.docs) {
-        List<Food> foodList = [];
         final mealName = mealDoc.id;
 
         final foodSnapshot = await FirebaseFirestore.instance
@@ -104,26 +102,30 @@ class _HomeScreenState extends State<HomeScreen> {
             .collection('foods')
             .get();
 
-        final foods =
-            foodSnapshot.docs.map((foodDoc) => foodDoc.data()).toList();
+        final foodList = foodSnapshot.docs.map((doc) {
+          final data = doc.data();
+          return Food(
+            foodName: data['foodName'],
+            protein: data['protein'],
+            carbs: data['carbs'],
+            fat: data['fat'],
+          );
+        }).toList();
 
-        for (var food in foods) {
-          print(food['foodName']);
-
-          foodList.add(Food(
-              foodName: food['foodName'],
-              protein: food['protein'],
-              carbs: food['carbs'],
-              fat: food['fat']));
+        // Insert foods into the correct meal
+        for (var meal in allMeals) {
+          if (meal.getMealName!.toLowerCase() == mealName.toLowerCase()) {
+            meal.getFoodList.clear();
+            meal.getFoodList.addAll(foodList);
+          }
         }
-
-        fetchedMeals.add(Meal(mealName, foodList));
       }
+
       setState(() {
-        meals = fetchedMeals;
+        meals = allMeals;
       });
     } catch (e) {
-      print('Error fetching meals: $e');
+      print('Error fetching meals: \$e');
     }
   }
 
@@ -245,33 +247,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 thickness: 7,
                 color: Colors.teal,
               ),
-              // list of meal breakdown
-              meals.isNotEmpty
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: meals.length,
-                      itemBuilder: (context, index) {
-                        return mealDropdown(
-                          meals[index].getMealName!.toUpperCase(),
-                          meals[index].getFoodList,
-                        );
-                      },
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Text(
-                            "NO MEALS TO DISPLAY",
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: meals.length,
+                itemBuilder: (context, index) {
+                  return mealDropdown(
+                    meals[index].getMealName!.toUpperCase(),
+                    meals[index].getFoodList,
+                  );
+                },
+              )
             ],
           ),
         ],
