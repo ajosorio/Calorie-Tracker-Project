@@ -1,6 +1,6 @@
-import 'dart:ffi';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFoodScreen extends StatefulWidget {
   const AddFoodScreen({super.key});
@@ -123,24 +123,57 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                       child: DropdownButton(
+                        value: mealSelction,
                         hint: Text(
                           "Select meal",
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                         items: [
                           DropdownMenuItem(
                             value: "Breakfast",
-                            child: Text("Breakfast"),
+                            child: Text(
+                              "Breakfast",
+                              style: TextStyle(
+                                color: Colors.teal,
+                              ),
+                            ),
                           ),
                           DropdownMenuItem(
                             value: "Lunch",
-                            child: Text("Lunch"),
+                            child: Text(
+                              "Lunch",
+                              style: TextStyle(
+                                color: Colors.teal,
+                              ),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: "Dinner",
+                            child: Text(
+                              "Dinner",
+                              style: TextStyle(
+                                color: Colors.teal,
+                              ),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: "Snack",
+                            child: Text(
+                              "Snack",
+                              style: TextStyle(
+                                color: Colors.teal,
+                              ),
+                            ),
                           )
                         ],
                         onChanged: (value) {
-                          // TODO: Handle meal selection
-                          mealSelction = value;
-                          
+                          setState(
+                            () {
+                              mealSelction = value as String;
+                            },
+                          );
                         },
                       ),
                     )
@@ -280,25 +313,81 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        foodName = foodNameController.text;
-                        fat = int.parse(fatController.text);
-                        protein = int.parse(proteinController.text);
-                        carbs = int.parse(carbsController.text);
+                      onPressed: () async {
+                        if (mealSelction == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please Select A Meal',
+                              ),
+                            ),
+                          );
+                        }
+                        foodName = foodNameController.text.trim();
+                        fat = int.tryParse(fatController.text);
+                        protein = int.tryParse(proteinController.text);
+                        carbs = int.tryParse(carbsController.text);
 
                         _formKey.currentState?.reset();
 
-                        // Dispose of controllers after use
-                        // foodNameController.dispose();
-                        // fatController.dispose();
-                        // proteinController.dispose();
-                        // carbsController.dispose();
+                        if (foodName!.isEmpty ||
+                            fat == null ||
+                            protein == null ||
+                            carbs == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please Fill All Fields',
+                              ),
+                            ),
+                          );
+                        }
 
-                        // TODO: Add log functionality... add to database. Do necessary local actions
-                        // call a method here to add food to the database
-                        // questions for professor, is this a good place to instantiate a food object, or when it comes back from the db?
-                        print(
-                            'meal: $mealSelction, name: $foodName, carbs: $carbs, protein: $protein, fat: $fat');
+                        final user = FirebaseAuth.instance.currentUser;
+                        final now = DateTime.now();
+                        final justDate =
+                            "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+                        final foodData = {
+                          'foodName': foodName,
+                          'fat': fat,
+                          'protein': protein,
+                          'carbs': carbs,
+                        };
+
+                        try {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user!.uid)
+                              .collection('dates')
+                              .doc(justDate)
+                              .collection('meals')
+                              .doc(mealSelction!)
+                              .collection('foods')
+                              .add(foodData);
+
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                              'Food Logged Successfully!',
+                            ),
+                          )); // Clear the form and selection
+                          _formKey.currentState?.reset();
+                          foodNameController.clear();
+                          fatController.clear();
+                          proteinController.clear();
+                          carbsController.clear();
+
+                          setState(() {
+                            mealSelction = null;
+                          });
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Error logging food: $e")),
+                          );
+                        }
+
+                        // print(
+                        //     'meal: $mealSelction, name: $foodName, carbs: $carbs, protein: $protein, fat: $fat');
                       },
                       child: const Text(
                         "Log",

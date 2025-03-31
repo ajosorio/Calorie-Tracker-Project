@@ -63,10 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   // TODO: uncomment this once meals are being generated for everyday
 
-  // var justDate =
-  //     '${DateTime.now().year}-${DateTime.now().month < 10 ? '0${DateTime.now().month}' : DateTime.now().month}-${DateTime.now().day}';
-
-  var justDate = "2025-03-27";
   User? user = FirebaseAuth.instance.currentUser;
   List<Map<String, dynamic>> foods = [];
 
@@ -75,11 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     fetchFoods();
   }
 
   Future<void> fetchFoods() async {
     try {
+      final now = DateTime.now();
+      final justDate =
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
       final mealsSnapshot = await FirebaseFirestore.instance
           // TODO: userID and date needs to be recieved outside of hard code
           .collection('users')
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final foodSnapshot = await FirebaseFirestore.instance
             .collection('users')
-            .doc('tIdgWuTwjeXNLpqMWJbJUEnj0Ui1')
+            .doc(user!.uid)
             .collection('dates')
             .doc(justDate)
             .collection('meals')
@@ -246,15 +246,32 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.teal,
               ),
               // list of meal breakdown
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return mealDropdown(
-                      meals[index].getMealName!, meals[index].getFoodList);
-                },
-              )
+              meals.isNotEmpty
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: meals.length,
+                      itemBuilder: (context, index) {
+                        return mealDropdown(
+                          meals[index].getMealName!.toUpperCase(),
+                          meals[index].getFoodList,
+                        );
+                      },
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            "NO MEALS TO DISPLAY",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
             ],
           ),
         ],
@@ -278,11 +295,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 32,
               ),
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const AddFoodScreen(),
-                  ),
-                );
+                Navigator.of(context)
+                    .push(
+                      MaterialPageRoute(
+                        builder: (context) => const AddFoodScreen(),
+                      ),
+                    )
+                    .then(
+                      (_) => fetchFoods(),
+                    );
               },
             ),
             IconButton(
