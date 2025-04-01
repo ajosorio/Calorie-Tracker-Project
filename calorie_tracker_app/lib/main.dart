@@ -15,6 +15,7 @@ import 'login_screen.dart';
 import 'widgets/meal_dropdown.dart';
 import 'widgets/pie_chart.dart';
 
+
 void main() async {
   runApp(const MaterialApp(title: "Firebase Example", home: MyApp()));
 }
@@ -38,6 +39,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (!firebaseReady) return const Center(child: CircularProgressIndicator());
+
+    // currentUser will be null if no one is signed in.
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) return const HomeScreen();
     return const LoginScreen();
   }
 }
@@ -58,6 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   // TODO: uncomment this once meals are being generated for everyday
 
+  var justDate =
+      '${DateTime.now().year}-${DateTime.now().month < 10 ? '0${DateTime.now().month}' : DateTime.now().month}-${DateTime.now().day < 10 ? '0${DateTime.now().day}' : DateTime.now().day}';
+  
   User? user = FirebaseAuth.instance.currentUser;
   List<Map<String, dynamic>> foods = [];
 
@@ -71,9 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchFoods() async {
     try {
-      final now = DateTime.now();
-      final justDate =
-          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
       final mealsSnapshot = await FirebaseFirestore.instance
           // TODO: userID and date needs to be recieved outside of hard code
           .collection('users')
@@ -83,14 +89,17 @@ class _HomeScreenState extends State<HomeScreen> {
           .collection('meals')
           .get();
 
-      List<Meal> allMeals = [
-        Meal("Breakfast", []),
-        Meal("Lunch", []),
-        Meal("Dinner", []),
-        Meal("Snacks", []),
-      ];
+      print(user!.uid);
+      print(mealsSnapshot);
+      print("Number of meals fetched: ${mealsSnapshot.docs.length}");
+      print("Querying path: /users/${user!.uid}/dates/$justDate/meals");
+      print(justDate);
+
+      List<Meal> fetchedMeals = [];
       for (var mealDoc in mealsSnapshot.docs) {
+        List<Food> foodList = [];
         final mealName = mealDoc.id;
+        print(mealName);
 
         final foodSnapshot = await FirebaseFirestore.instance
             .collection('users')
@@ -102,30 +111,26 @@ class _HomeScreenState extends State<HomeScreen> {
             .collection('foods')
             .get();
 
-        final foodList = foodSnapshot.docs.map((doc) {
-          final data = doc.data();
-          return Food(
-            foodName: data['foodName'],
-            protein: data['protein'],
-            carbs: data['carbs'],
-            fat: data['fat'],
-          );
-        }).toList();
+        final foods =
+            foodSnapshot.docs.map((foodDoc) => foodDoc.data()).toList();
 
-        // Insert foods into the correct meal
-        for (var meal in allMeals) {
-          if (meal.getMealName!.toLowerCase() == mealName.toLowerCase()) {
-            meal.getFoodList.clear();
-            meal.getFoodList.addAll(foodList);
-          }
+        for (var food in foods) {
+          print(food['foodName']);
+
+          foodList.add(Food(
+              foodName: food['foodName'],
+              protein: food['protein'],
+              carbs: food['carbs'],
+              fat: food['fat']));
         }
-      }
 
+        fetchedMeals.add(Meal(mealName, foodList));
+      }
       setState(() {
-        meals = allMeals;
+        meals = fetchedMeals;
       });
     } catch (e) {
-      print('Error fetching meals: \$e');
+      print('Error fetching meals: $e');
     }
   }
 

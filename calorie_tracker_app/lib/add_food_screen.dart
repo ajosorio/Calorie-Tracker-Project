@@ -322,13 +322,12 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                               ),
                             ),
                           );
+                          return;
                         }
                         foodName = foodNameController.text.trim();
                         fat = int.tryParse(fatController.text);
                         protein = int.tryParse(proteinController.text);
                         carbs = int.tryParse(carbsController.text);
-
-                        _formKey.currentState?.reset();
 
                         if (foodName!.isEmpty ||
                             fat == null ||
@@ -341,7 +340,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                               ),
                             ),
                           );
+                          return;
                         }
+
+                        _formKey.currentState?.reset();
 
                         final user = FirebaseAuth.instance.currentUser;
                         final now = DateTime.now();
@@ -349,13 +351,24 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
                         final foodData = {
-                          'foodName': foodName,
-                          'fat': fat,
-                          'protein': protein,
-                          'carbs': carbs,
+                          'foodName': foodName ?? 'Unknown food',
+                          'fat': fat ?? 0,
+                          'protein': protein ?? 0,
+                          'carbs': carbs ?? 0,
                         };
 
                         try {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user!.uid)
+                              .collection('dates')
+                              .doc(justDate)
+                              .collection('meals')
+                              .doc(mealSelction!)
+                              .set({
+                            'mealName': mealSelction,
+                          }, SetOptions(merge: true));
+
                           await FirebaseFirestore.instance
                               .collection('users')
                               .doc(user!.uid)
