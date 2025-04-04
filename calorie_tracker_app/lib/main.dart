@@ -15,7 +15,6 @@ import 'login_screen.dart';
 import 'widgets/meal_dropdown.dart';
 import 'widgets/pie_chart.dart';
 
-
 void main() async {
   runApp(const MaterialApp(title: "Firebase Example", home: MyApp()));
 }
@@ -43,7 +42,7 @@ class _MyAppState extends State<MyApp> {
 
     // currentUser will be null if no one is signed in.
     User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) return const HomeScreen();
+    if (user != null) return const LoginScreen();
     return const LoginScreen();
   }
 }
@@ -66,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   var justDate =
       '${DateTime.now().year}-${DateTime.now().month < 10 ? '0${DateTime.now().month}' : DateTime.now().month}-${DateTime.now().day < 10 ? '0${DateTime.now().day}' : DateTime.now().day}';
-  
+
   User? user = FirebaseAuth.instance.currentUser;
   List<Map<String, dynamic>> foods = [];
 
@@ -76,6 +75,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     fetchFoods();
+  }
+
+  Future<void> initMeals() async {
+    try {
+      for (var meal in meals) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .collection('dates')
+            .doc(justDate)
+            .collection('meals')
+            .doc(meal.getMealName)
+            .set({
+          'mealName': meal,
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      print('Error initializing meals: $e');
+    }
   }
 
   Future<void> fetchFoods() async {
@@ -126,8 +144,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         fetchedMeals.add(Meal(mealName, foodList));
       }
+
       setState(() {
         meals = fetchedMeals;
+        if (fetchedMeals.length > 1) {
+          meals = fetchedMeals;
+        }
       });
     } catch (e) {
       print('Error fetching meals: $e');

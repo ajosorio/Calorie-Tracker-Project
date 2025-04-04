@@ -115,8 +115,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const SignupScreen()));
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const SignupScreen(),
+                      ),
+                      (route) => false,
+                    );
                   })
             ],
           ),
@@ -155,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } on FirebaseAuthException catch (e) {
       // Exceptions are raised if the Firebase Auth service
       // encounters an error. We need to display these to the user.
-      if (e.code == 'user-not-found') {
+      if (e.code == 'auth/user-not-found') {
         error = 'No user found for that email.';
       } else if (e.code == 'wrong-password') {
         error = 'Wrong password provided for that user.';

@@ -371,7 +371,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
 
                           await FirebaseFirestore.instance
                               .collection('users')
-                              .doc(user!.uid)
+                              .doc(user.uid)
                               .collection('dates')
                               .doc(justDate)
                               .collection('meals')

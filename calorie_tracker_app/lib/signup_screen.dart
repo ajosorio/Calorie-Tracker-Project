@@ -187,6 +187,11 @@ class _SignupScreenState extends State<SignupScreen> {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email!, password: password!);
       print("Created account ${credential.user}");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Account created successfully!',
+        ),
+      ));
       error = null; // clear the error message if exists.
       setState(() {}); // Trigger a rebuild
 

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 Widget mealDropdown(String mealName, List<dynamic> foods) {
-  // foods = List.from(foods);
-  // print(foods[0].foodName);
+ 
 
   return Padding(
     padding: const EdgeInsets.symmetric(
