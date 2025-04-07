@@ -153,9 +153,12 @@ class _LoginScreenState extends State<LoginScreen> {
       // after logging in.
       Navigator.of(context).pop();
       // Now go to the HomeScreen.
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
-      ));
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+        (route) => false,
+      );
     } on FirebaseAuthException catch (e) {
       // Exceptions are raised if the Firebase Auth service
       // encounters an error. We need to display these to the user.

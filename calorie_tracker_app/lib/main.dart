@@ -74,11 +74,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    fetchFoods();
+    intializeMealsAndFetchFoods();
+  }
+
+  Future<void> intializeMealsAndFetchFoods() async {
+    await initMeals();
+    await fetchFoods();
   }
 
   Future<void> initMeals() async {
     try {
+      int c = 0;
       for (var meal in meals) {
         await FirebaseFirestore.instance
             .collection('users')
@@ -88,9 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
             .collection('meals')
             .doc(meal.getMealName)
             .set({
-          'mealName': meal,
+          'mealName': meal.getMealName,
+          'order': c,
         }, SetOptions(merge: true));
+        c++;
+        setState(() {});
       }
+      print('meals intialized');
     } catch (e) {
       print('Error initializing meals: $e');
     }
@@ -105,13 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
           .collection('dates')
           .doc(justDate)
           .collection('meals')
+          .orderBy('order')
           .get();
 
-      print(user!.uid);
-      print(mealsSnapshot);
+      print("User Id: ${user!.uid}");
+      print("Meal snapshot: $mealsSnapshot");
       print("Number of meals fetched: ${mealsSnapshot.docs.length}");
       print("Querying path: /users/${user!.uid}/dates/$justDate/meals");
-      print(justDate);
 
       List<Meal> fetchedMeals = [];
       for (var mealDoc in mealsSnapshot.docs) {
@@ -147,9 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         meals = fetchedMeals;
-        if (fetchedMeals.length > 1) {
-          meals = fetchedMeals;
-        }
       });
     } catch (e) {
       print('Error fetching meals: $e');
