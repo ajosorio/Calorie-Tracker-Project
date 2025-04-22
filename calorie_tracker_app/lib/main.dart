@@ -81,6 +81,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> initMeals() async {
     try {
+      // Write something into the date doc to prevent it from being italicized
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('dates')
+          .doc(justDate)
+          .set({'createdAt': FieldValue.serverTimestamp()},
+              SetOptions(merge: true));
+
       int c = 0;
       for (var meal in meals) {
         await FirebaseFirestore.instance
@@ -295,7 +304,10 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-                icon: const Icon(Icons.home, color: Colors.white),
+                icon: const Icon(
+                  Icons.home,
+                  color: Colors.white,
+                ),
                 onPressed: () {}),
             IconButton(
               icon: const Icon(Icons.add, color: Colors.white, size: 32),

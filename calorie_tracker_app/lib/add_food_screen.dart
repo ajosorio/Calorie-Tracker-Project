@@ -214,9 +214,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                       width: 10,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        // TODO: Add scan functionality
-                      },
+                      onPressed: () {},
                       child: const Text(
                         "Scan",
                         style: TextStyle(
