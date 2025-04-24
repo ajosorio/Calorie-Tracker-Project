@@ -1,6 +1,10 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'food.dart';
+import 'widgets/food_dropdown.dart';
 
 class AddFoodScreen extends StatefulWidget {
   const AddFoodScreen({super.key});
@@ -22,42 +26,134 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
   int? carbs;
   int? fat;
   final _formKey = GlobalKey<FormState>();
+  List<dynamic> previousFoods = [];
+  final TextEditingController controller = TextEditingController();
+  List<dynamic> localResults = [];
 
-  // favorites list and selected favorite
-  final List<String> favoriteFoods = [];
-  String? selectedFavorite;
-
-  // Handle when a favorite is selected
-  void _onFavoriteSelected(String? value) {
-    if (value == null) return;
-
-    setState(() {
-      selectedFavorite = value;
-      // foodNameController.text = value;
-
-      // Example: You can also load macros if you saved them with food later
-      // For now, just fill in dummy values when selecting a favorite
-      fatController.text = "5";
-      proteinController.text = "10";
-      carbsController.text = "15";
-    });
+  @override
+  void initState() {
+    super.initState();
+    fetchPreviousFoods();
   }
 
-  // Add current food to favorites
-  void _addToFavorites() {
-    final foodName = foodNameController.text.trim();
-    if (foodName.isNotEmpty && !favoriteFoods.contains(foodName)) {
-      setState(() {
-        favoriteFoods.add(foodName);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+  void addFoodForTheDay(Food food, bool previous) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final now = DateTime.now();
+    final justDate =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+    final foodData = {
+      'foodName': food.foodName,
+      'fat': food.fat,
+      'protein': food.protein,
+      'carbs': food.carbs,
+    };
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('dates')
+          .doc(justDate)
+          .collection('meals')
+          .doc(mealSelction!)
+          .set({
+        'mealName': mealSelction,
+      }, SetOptions(merge: true));
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('dates')
+          .doc(justDate)
+          .collection('meals')
+          .doc(mealSelction!)
+          .collection('foods')
+          .add(foodData);
+
+      if (!previous) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('foodHistory')
+            .doc(foodName)
+            .set({
+          'foodName': foodName ?? 'Unknown food',
+          'fat': fat ?? 0,
+          'protein': protein ?? 0,
+          'carbs': carbs ?? 0,
+          'timeStamp': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-            '$foodName added to favorites',
+            'Food Logged Successfully!',
           ),
+        )); // Clear the form and selection
+        _formKey.currentState?.reset();
+        foodNameController.clear();
+        fatController.clear();
+        proteinController.clear();
+        carbsController.clear();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Food Logged Successfully!',
         ),
+      )); // Clear
+
+      setState(() {
+        mealSelction = null;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error logging food: $e")),
       );
     }
+
+    setState(() {});
+    print("Added ${food.foodName} to the day's list.");
+  }
+
+  /// Fetches all previous logged foods for a user within their foodHistory collection. This is subject to change to foods previously logged through an arbitrary amount of time.
+  Future<void> fetchPreviousFoods() async {
+    try {
+      final previousFoodsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('foodHistory')
+          .get();
+
+      final foods =
+          previousFoodsSnapshot.docs.map((foodDoc) => foodDoc.data()).toList();
+
+      for (var food in foods) {
+        previousFoods.add(Food(
+            foodName: food['foodName'],
+            protein: food['protein'],
+            carbs: food['carbs'],
+            fat: food['fat']));
+      }
+      setState(() {
+        localResults = previousFoods;
+      });
+    } catch (e) {
+      print("Error fetching previous foods: $e");
+    }
+  }
+
+  void localQuery(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        localResults = previousFoods;
+      } else {
+        localResults = previousFoods.where((food) {
+          final foodName = food.foodName.toLowerCase();
+          return foodName.contains(query.toLowerCase());
+        }).toList();
+      }
+    });
   }
 
   @override
@@ -74,354 +170,362 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         ),
         backgroundColor: Colors.teal,
       ),
-      body: Form(
-        key: _formKey,
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Favorites dropdown
-                Row(
-                  children: [
-                    const Text(
-                      "Favorites: ",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    DropdownButton<String>(
-                      value: selectedFavorite,
-                      hint: const Text(
-                        "Select favorite",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      items: favoriteFoods.map((String food) {
-                        return DropdownMenuItem<String>(
-                          value: food,
-                          child: Text(
-                            food,
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: _onFavoriteSelected,
-                    ),
-                  ],
+          padding: EdgeInsets.fromLTRB(5, 15, 5, 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Search previous foods",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              TextField(
+                style: TextStyle(
+                  color: Colors.white,
                 ),
-                Row(
-                  children: [
-                    Text(
-                      "Meal:",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                      child: DropdownButton(
-                        value: mealSelction,
-                        hint: Text(
-                          "Select meal",
+                controller: controller,
+                decoration: const InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Color.fromARGB(255, 71, 122, 110), width: 2.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.tealAccent, width: 2.0),
+                  ),
+                  hintText: "Enter a food",
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+                onChanged: (value) {
+                  localQuery(controller.text);
+                  print('Food searched for is: ${controller.text}');
+                },
+              ),
+              foodDropdown("Previously Logged", localResults,
+                  (food, previous) => addFoodForTheDay(food, previous)),
+              Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Meal:",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                              child: DropdownButton(
+                                value: mealSelction,
+                                hint: Text(
+                                  "Select meal",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: "Breakfast",
+                                    child: Text(
+                                      "Breakfast",
+                                      style: TextStyle(
+                                        color: Colors.teal,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "Lunch",
+                                    child: Text(
+                                      "Lunch",
+                                      style: TextStyle(
+                                        color: Colors.teal,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "Dinner",
+                                    child: Text(
+                                      "Dinner",
+                                      style: TextStyle(
+                                        color: Colors.teal,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "Snack",
+                                    child: Text(
+                                      "Snack",
+                                      style: TextStyle(
+                                        color: Colors.teal,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                                onChanged: (value) {
+                                  setState(
+                                    () {
+                                      mealSelction = value as String;
+                                    },
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        // Food name input with scan button
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                controller: foodNameController,
+                                cursorColor: Colors.teal,
+                                decoration: const InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.teal,
+                                    ),
+                                  ),
+                                  fillColor: Colors.white,
+                                  labelText: "Food name",
+                                  labelStyle: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                onChanged: (value) {},
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        // Macronutrient input fields
+                        const Text(
+                          "Fat",
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
-                        items: [
-                          DropdownMenuItem(
-                            value: "Breakfast",
-                            child: Text(
-                              "Breakfast",
-                              style: TextStyle(
-                                color: Colors.teal,
-                              ),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: "Lunch",
-                            child: Text(
-                              "Lunch",
-                              style: TextStyle(
-                                color: Colors.teal,
-                              ),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: "Dinner",
-                            child: Text(
-                              "Dinner",
-                              style: TextStyle(
-                                color: Colors.teal,
-                              ),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: "Snack",
-                            child: Text(
-                              "Snack",
-                              style: TextStyle(
-                                color: Colors.teal,
-                              ),
-                            ),
-                          )
-                        ],
-                        onChanged: (value) {
-                          setState(
-                            () {
-                              mealSelction = value as String;
-                            },
-                          );
-                        },
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Food name input with scan button
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                        controller: foodNameController,
-                        cursorColor: Colors.teal,
-                        decoration: const InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.teal,
-                            ),
-                          ),
-                          fillColor: Colors.white,
-                          labelText: "Food name",
-                          labelStyle: TextStyle(
+                        TextFormField(
+                          style: TextStyle(
                             color: Colors.white,
                           ),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.white,
+                          controller: fatController,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.teal,
+                          decoration: const InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.teal,
+                              ),
                             ),
+                            border: OutlineInputBorder(),
                           ),
                         ),
-                        onChanged: (value) {},
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // TODO: Add scan functionality
-                      },
-                      child: const Text(
-                        "Scan",
-                        style: TextStyle(
-                          color: Colors.teal,
+                        const SizedBox(
+                          height: 10,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                // Macronutrient input fields
-                const Text(
-                  "Fat",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                TextFormField(
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                  controller: fatController,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.teal,
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.teal,
-                      ),
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
 
-                const Text(
-                  "Protein",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                TextFormField(
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                  controller: proteinController,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.teal,
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.teal,
-                      ),
-                    ),
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "Carbs",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                TextFormField(
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                  controller: carbsController,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.teal,
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.teal,
-                      ),
-                    ),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                // Buttons: Log + Add to Favorites
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (mealSelction == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please Select A Meal',
+                        const Text(
+                          "Protein",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        TextFormField(
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                          controller: proteinController,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.teal,
+                          decoration: const InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.teal,
                               ),
                             ),
-                          );
-                          return;
-                        }
-                        foodName = foodNameController.text.trim();
-                        fat = int.tryParse(fatController.text);
-                        protein = int.tryParse(proteinController.text);
-                        carbs = int.tryParse(carbsController.text);
-
-                        if (foodName!.isEmpty ||
-                            fat == null ||
-                            protein == null ||
-                            carbs == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please Fill All Fields',
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text(
+                          "Carbs",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        TextFormField(
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                          controller: carbsController,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.teal,
+                          decoration: const InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.teal,
                               ),
                             ),
-                          );
-                          return;
-                        }
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
 
-                        _formKey.currentState?.reset();
+                        // Buttons: Log + Add to Favorites
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (mealSelction == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Please Select A Meal',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                foodName = foodNameController.text.trim();
+                                fat = int.tryParse(fatController.text);
+                                protein = int.tryParse(proteinController.text);
+                                carbs = int.tryParse(carbsController.text);
 
-                        final user = FirebaseAuth.instance.currentUser;
-                        final now = DateTime.now();
-                        final justDate =
-                            "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+                                if (foodName!.isEmpty ||
+                                    fat == null ||
+                                    protein == null ||
+                                    carbs == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Please Fill All Fields',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                        final foodData = {
-                          'foodName': foodName ?? 'Unknown food',
-                          'fat': fat ?? 0,
-                          'protein': protein ?? 0,
-                          'carbs': carbs ?? 0,
-                        };
+                                var food = Food(
+                                    foodName: foodName!,
+                                    carbs: carbs!,
+                                    fat: fat!,
+                                    protein: protein!);
 
-                        try {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user!.uid)
-                              .collection('dates')
-                              .doc(justDate)
-                              .collection('meals')
-                              .doc(mealSelction!)
-                              .set({
-                            'mealName': mealSelction,
-                          }, SetOptions(merge: true));
+                                _formKey.currentState?.reset();
+                                addFoodForTheDay(food, false);
+                                // final user = FirebaseAuth.instance.currentUser;
+                                // final now = DateTime.now();
+                                // final justDate =
+                                //     "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('dates')
-                              .doc(justDate)
-                              .collection('meals')
-                              .doc(mealSelction!)
-                              .collection('foods')
-                              .add(foodData);
+                                // final foodData = {
+                                //   'foodName': foodName ?? 'Unknown food',
+                                //   'fat': fat ?? 0,
+                                //   'protein': protein ?? 0,
+                                //   'carbs': carbs ?? 0,
+                                // };
 
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                              'Food Logged Successfully!',
+                                // try {
+                                //   await FirebaseFirestore.instance
+                                //       .collection('users')
+                                //       .doc(user!.uid)
+                                //       .collection('dates')
+                                //       .doc(justDate)
+                                //       .collection('meals')
+                                //       .doc(mealSelction!)
+                                //       .set({
+                                //     'mealName': mealSelction,
+                                //   }, SetOptions(merge: true));
+
+                                //   await FirebaseFirestore.instance
+                                //       .collection('users')
+                                //       .doc(user.uid)
+                                //       .collection('dates')
+                                //       .doc(justDate)
+                                //       .collection('meals')
+                                //       .doc(mealSelction!)
+                                //       .collection('foods')
+                                //       .add(foodData);
+
+                                //   await FirebaseFirestore.instance
+                                //       .collection('users')
+                                //       .doc(user.uid)
+                                //       .collection('foodHistory')
+                                //       .doc(foodName)
+                                //       .set({
+                                //     'foodName': foodName ?? 'Unknown food',
+                                //     'fat': fat ?? 0,
+                                //     'protein': protein ?? 0,
+                                //     'carbs': carbs ?? 0,
+                                //     'timeStamp': FieldValue.serverTimestamp(),
+                                //   });
+
+                                //   ScaffoldMessenger.of(context)
+                                //       .showSnackBar(SnackBar(
+                                //     content: Text(
+                                //       'Food Logged Successfully!',
+                                //     ),
+                                //   )); // Clear the form and selection
+                                //   _formKey.currentState?.reset();
+                                //   foodNameController.clear();
+                                //   fatController.clear();
+                                //   proteinController.clear();
+                                //   carbsController.clear();
+
+                                //   setState(() {
+                                //     mealSelction = null;
+                                //   });
+                                // } catch (e) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(
+                                //         content:
+                                //             Text("Error logging food: $e")),
+                                //   );
+                                // }
+                              },
+                              child: const Text(
+                                "Log",
+                                style: TextStyle(
+                                  color: Colors.teal,
+                                ),
+                              ),
                             ),
-                          )); // Clear the form and selection
-                          _formKey.currentState?.reset();
-                          foodNameController.clear();
-                          fatController.clear();
-                          proteinController.clear();
-                          carbsController.clear();
-
-                          setState(() {
-                            mealSelction = null;
-                          });
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Error logging food: $e")),
-                          );
-                        }
-
-                        // print(
-                        //     'meal: $mealSelction, name: $foodName, carbs: $carbs, protein: $protein, fat: $fat');
-                      },
-                      child: const Text(
-                        "Log",
-                        style: TextStyle(
-                          color: Colors.teal,
+                          ],
                         ),
-                      ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: _addToFavorites,
-                      child: const Text(
-                        "Add to Favorites",
-                        style: TextStyle(
-                          color: Colors.teal,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

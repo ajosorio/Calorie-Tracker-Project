@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: noData
                           ? const Center(
                               child: Text(
-                                "No data to display for today.",
+                                "No foods logged yet today.",
                                 style: TextStyle(
                                     color: Colors.white70, fontSize: 16),
                                 textAlign: TextAlign.center,
