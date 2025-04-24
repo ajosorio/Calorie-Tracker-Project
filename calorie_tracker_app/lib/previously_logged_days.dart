@@ -28,7 +28,6 @@ class _PreviouslyLoggedDaysScreenState
         .collection('dates')
         .get();
 
-    print(dateSnapshots);
     // prints how many dates are retrieved for trouble shooting
     print('Total dates found: ${dateSnapshots.docs.length}');
 
