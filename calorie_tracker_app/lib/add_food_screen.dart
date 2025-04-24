@@ -159,7 +159,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             ),
                           ),
                           DropdownMenuItem(
-                            value: "Snack",
+                            value: "Snacks",
                             child: Text(
                               "Snack",
                               style: TextStyle(

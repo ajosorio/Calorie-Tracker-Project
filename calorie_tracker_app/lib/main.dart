@@ -55,6 +55,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = <Widget>[
+    const HomeScreen(),
+    const AddFoodScreen(),
+    const PreviouslyLoggedDaysScreen(),
+    const LoginScreen()
+  ];
+
   List<Meal> meals = [
     Meal("Breakfast", []),
     Meal("Lunch", []),
@@ -195,153 +204,230 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black12,
-      appBar: AppBar(
-        title: const Text(
-          "Macro Mate",
-          style: TextStyle(color: Colors.white, fontSize: 28),
-        ),
-        backgroundColor: Colors.teal,
-      ),
-      body: ListView(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(),
-                child:
-                    // this row contains the pie chart and macro values
-                    Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+      appBar: _selectedIndex == 0
+          ? AppBar(
+              title: const Text(
+                "Macro Mate",
+                style: TextStyle(color: Colors.white, fontSize: 28),
+              ),
+              backgroundColor: Colors.teal,
+            )
+          : null,
+      // show different screen depending on selectedIndex
+      body: _selectedIndex == 0
+          ? ListView(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    // pie chart or message if no data
-                    SizedBox(
-                      height: 250,
-                      width: 230,
-                      child: noData
-                          ? const Center(
-                              child: Text(
-                                "No data to display for today.",
-                                style: TextStyle(
-                                    color: Colors.white70, fontSize: 16),
-                                textAlign: TextAlign.center,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(),
+                      child:
+                          // this row contains the pie chart and macro values
+                          Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // pie chart or message if no data
+                          SizedBox(
+                            height: 250,
+                            width: 230,
+                            child: noData
+                                ? const Center(
+                                    child: Text(
+                                      "No data to display for today.",
+                                      style: TextStyle(
+                                          color: Colors.white70, fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  )
+                                : MyPieChart(dataMap: dataMap),
+                          ),
+                          const SizedBox(width: 20),
+                          // column displaying macro breakdown as text
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.square,
+                                      color: Color.fromARGB(255, 10, 134, 251)),
+                                  Text(
+                                    "Protein: ${totalProtein.toInt()}g",
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
+                                ],
                               ),
-                            )
-                          : MyPieChart(dataMap: dataMap),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Icon(Icons.square,
+                                      color: Color.fromARGB(255, 85, 214, 186)),
+                                  Text(
+                                    "Carbs: ${totalCarbs.toInt()}g",
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const Icon(Icons.square,
+                                      color:
+                                          Color.fromARGB(255, 129, 181, 233)),
+                                  Text(
+                                    "Fats: ${totalFats.toInt()}g",
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "Calories: ${calories.toInt()} kcal",
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 20),
-                    // column displaying macro breakdown as text
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.square,
-                                color: Color.fromARGB(255, 10, 134, 251)),
-                            Text(
-                              "Protein: ${totalProtein.toInt()}g",
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Icon(Icons.square,
-                                color: Color.fromARGB(255, 85, 214, 186)),
-                            Text(
-                              "Carbs: ${totalCarbs.toInt()}g",
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Icon(Icons.square,
-                                color: Color.fromARGB(255, 129, 181, 233)),
-                            Text(
-                              "Fats: ${totalFats.toInt()}g",
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "Calories: ${calories.toInt()} kcal",
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.white),
-                        ),
-                      ],
-                    ),
+                    Divider(thickness: 7, color: Colors.teal),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: meals.length,
+                      itemBuilder: (context, index) {
+                        return mealDropdown(
+                          meals[index].getMealName!.toUpperCase(),
+                          meals[index].getFoodList,
+                        );
+                      },
+                    )
                   ],
                 ),
-              ),
-              Divider(thickness: 7, color: Colors.teal),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: meals.length,
-                itemBuilder: (context, index) {
-                  return mealDropdown(
-                    meals[index].getMealName!.toUpperCase(),
-                    meals[index].getFoodList,
-                  );
-                },
-              )
-            ],
-          ),
-        ],
-      ),
+              ],
+            )
+          : _selectedIndex == 1
+              ? const AddFoodScreen()
+              : _selectedIndex == 2
+                  ? const PreviouslyLoggedDaysScreen()
+                  : const LoginScreen(),
+
       // bottom nav bar with icons
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.teal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-                icon: const Icon(
-                  Icons.home,
-                  color: Colors.white,
+      bottomNavigationBar: _selectedIndex == 0
+          ? BottomNavigationBar(
+              backgroundColor: Colors.teal,
+              selectedLabelStyle: const TextStyle(color: Colors.white),
+              unselectedLabelStyle: const TextStyle(color: Colors.white),
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home, color: Colors.white),
+                  label: "Home",
                 ),
-                onPressed: () {}),
-            IconButton(
-              icon: const Icon(Icons.add, color: Colors.white, size: 32),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                      builder: (context) => const AddFoodScreen(),
-                    ))
-                    .then((_) => fetchFoods());
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.add, color: Colors.white),
+                  label: "Add Food",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_today, color: Colors.white),
+                  label: "Previous",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.logout, color: Colors.white),
+                  label: "Log Out",
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white,
+              onTap: (value) async {
+                if (value == 3) {
+                  // Log out
+                  await FirebaseAuth.instance.signOut();
+                  if (context.mounted) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  }
+                } else if (value == 1) {
+                  // Go to Add Food screen, then refresh on return
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(
+                          builder: (context) => const AddFoodScreen()))
+                      .then((_) async {
+                    await intializeMealsAndFetchFoods();
+                    setState(() {
+                      _selectedIndex = 0;
+                    });
+                  });
+                } else if (value == 2) {
+                  // Push Previous Meals screen
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const PreviouslyLoggedDaysScreen(),
+                    ),
+                  );
+                } else {
+                  setState(() => _selectedIndex = value);
+                }
               },
-            ),
-            IconButton(
-              icon: const Icon(Icons.calendar_today, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const PreviouslyLoggedDaysScreen(),
-                  ),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+              type: BottomNavigationBarType.fixed,
+            )
+          : null,
     );
   }
 }
+
+        // color: Colors.teal,
+        // child: Row(
+        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+        // children: [
+        //   IconButton(
+        //       icon: const Icon(
+        //         Icons.home,
+        //         color: Colors.white,
+        //       ),
+        //       onPressed: () {}),
+        //   IconButton(
+        //     icon: const Icon(Icons.add, color: Colors.white, size: 32),
+        //     onPressed: () {
+        //       Navigator.of(context)
+        //           .push(MaterialPageRoute(
+        //             builder: (context) => const AddFoodScreen(),
+        //           ))
+        //           .then((_) => fetchFoods());
+        //     },
+        //   ),
+        //   IconButton(
+        //     icon: const Icon(Icons.calendar_today, color: Colors.white),
+        //     onPressed: () {
+        //       Navigator.of(context).push(
+        //         MaterialPageRoute(
+        //           builder: (context) => const PreviouslyLoggedDaysScreen(),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        //   IconButton(
+        //     icon: const Icon(Icons.logout, color: Colors.white),
+        //     onPressed: () {
+        //       Navigator.of(context).push(
+        //         MaterialPageRoute(
+        //           builder: (context) => const LoginScreen(),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        //],
+        //),
+//       ),
+//     );
+//   }
+// }
