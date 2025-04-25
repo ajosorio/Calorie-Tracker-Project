@@ -57,12 +57,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = <Widget>[
-    const HomeScreen(),
-    const AddFoodScreen(),
-    const PreviouslyLoggedDaysScreen(),
-    const LoginScreen()
-  ];
+  // NOT NEEDED AS OF NOW
+  // final List<Widget> _pages = <Widget>[
+  //   const HomeScreen(),
+  //   const AddFoodScreen(),
+  //   const PreviouslyLoggedDaysScreen(),
+  //   const LoginScreen()
+  // ];
 
   List<Meal> meals = [
     Meal("Breakfast", []),

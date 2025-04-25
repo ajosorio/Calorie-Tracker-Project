@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black38,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -30,6 +30,15 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 24,
+                ),
+                child: Image.asset(
+                  'assets/images/MacroMateLogo.png',
+                  height: 300,
+                ),
+              ),
               TextFormField(
                 style: TextStyle(
                   color: Colors.white,

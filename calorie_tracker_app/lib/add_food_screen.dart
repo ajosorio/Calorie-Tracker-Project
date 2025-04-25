@@ -38,6 +38,19 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
 
   void addFoodForTheDay(Food food, bool previous) async {
     final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No user signed in.")),
+      );
+      return;
+    }
+    if (mealSelction == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a meal.")),
+      );
+      return;
+    }
+
     final now = DateTime.now();
     final justDate =
         "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
@@ -85,11 +98,11 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           'timeStamp': FieldValue.serverTimestamp(),
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            'Food Logged Successfully!',
-          ),
-        )); // Clear the form and selection
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text(
+        //     'Food Logged Successfully!',
+        //   ),
+        // )); // Clear the form and selection
         _formKey.currentState?.reset();
         foodNameController.clear();
         fatController.clear();
@@ -185,14 +198,17 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                   color: Colors.white,
                 ),
                 controller: controller,
+                cursorColor: Colors.teal,
                 decoration: const InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                         color: Color.fromARGB(255, 71, 122, 110), width: 2.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Colors.tealAccent, width: 2.0),
+                    borderSide: BorderSide(
+                      color: Colors.tealAccent,
+                      width: 2.0,
+                    ),
                   ),
                   hintText: "Enter a food",
                   hintStyle: TextStyle(color: Colors.white),
@@ -260,7 +276,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     ),
                                   ),
                                   DropdownMenuItem(
-                                    value: "Snack",
+                                    value: "Snacks",
                                     child: Text(
                                       "Snack",
                                       style: TextStyle(
@@ -400,20 +416,18 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
 
                         // Buttons: Log + Add to Favorites
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ElevatedButton(
                               onPressed: () async {
                                 if (mealSelction == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(
-                                        'Please Select A Meal',
-                                      ),
-                                    ),
+                                        content: Text('Please Select A Meal')),
                                   );
                                   return;
                                 }
+
                                 foodName = foodNameController.text.trim();
                                 fat = int.tryParse(fatController.text);
                                 protein = int.tryParse(proteinController.text);
@@ -425,99 +439,97 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     carbs == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(
-                                        'Please Fill All Fields',
-                                      ),
-                                    ),
+                                        content:
+                                            Text('Please Fill All Fields')),
                                   );
                                   return;
                                 }
 
                                 var food = Food(
-                                    foodName: foodName!,
-                                    carbs: carbs!,
-                                    fat: fat!,
-                                    protein: protein!);
+                                  foodName: foodName!,
+                                  carbs: carbs!,
+                                  fat: fat!,
+                                  protein: protein!,
+                                );
 
-                                _formKey.currentState?.reset();
+                                // ✅ Only call the logger, which handles the SnackBar
                                 addFoodForTheDay(food, false);
-                                // final user = FirebaseAuth.instance.currentUser;
-                                // final now = DateTime.now();
-                                // final justDate =
-                                //     "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-
-                                // final foodData = {
-                                //   'foodName': foodName ?? 'Unknown food',
-                                //   'fat': fat ?? 0,
-                                //   'protein': protein ?? 0,
-                                //   'carbs': carbs ?? 0,
-                                // };
-
-                                // try {
-                                //   await FirebaseFirestore.instance
-                                //       .collection('users')
-                                //       .doc(user!.uid)
-                                //       .collection('dates')
-                                //       .doc(justDate)
-                                //       .collection('meals')
-                                //       .doc(mealSelction!)
-                                //       .set({
-                                //     'mealName': mealSelction,
-                                //   }, SetOptions(merge: true));
-
-                                //   await FirebaseFirestore.instance
-                                //       .collection('users')
-                                //       .doc(user.uid)
-                                //       .collection('dates')
-                                //       .doc(justDate)
-                                //       .collection('meals')
-                                //       .doc(mealSelction!)
-                                //       .collection('foods')
-                                //       .add(foodData);
-
-                                //   await FirebaseFirestore.instance
-                                //       .collection('users')
-                                //       .doc(user.uid)
-                                //       .collection('foodHistory')
-                                //       .doc(foodName)
-                                //       .set({
-                                //     'foodName': foodName ?? 'Unknown food',
-                                //     'fat': fat ?? 0,
-                                //     'protein': protein ?? 0,
-                                //     'carbs': carbs ?? 0,
-                                //     'timeStamp': FieldValue.serverTimestamp(),
-                                //   });
-
-                                //   ScaffoldMessenger.of(context)
-                                //       .showSnackBar(SnackBar(
-                                //     content: Text(
-                                //       'Food Logged Successfully!',
-                                //     ),
-                                //   )); // Clear the form and selection
-                                //   _formKey.currentState?.reset();
-                                //   foodNameController.clear();
-                                //   fatController.clear();
-                                //   proteinController.clear();
-                                //   carbsController.clear();
-
-                                //   setState(() {
-                                //     mealSelction = null;
-                                //   });
-                                // } catch (e) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     SnackBar(
-                                //         content:
-                                //             Text("Error logging food: $e")),
-                                //   );
-                                // }
                               },
                               child: const Text(
                                 "Log",
-                                style: TextStyle(
-                                  color: Colors.teal,
-                                ),
+                                style: TextStyle(color: Colors.teal),
                               ),
                             ),
+
+                            // final user = FirebaseAuth.instance.currentUser;
+                            // final now = DateTime.now();
+                            // final justDate =
+                            //     "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+                            // final foodData = {
+                            //   'foodName': foodName ?? 'Unknown food',
+                            //   'fat': fat ?? 0,
+                            //   'protein': protein ?? 0,
+                            //   'carbs': carbs ?? 0,
+                            // };
+
+                            // try {
+                            //   await FirebaseFirestore.instance
+                            //       .collection('users')
+                            //       .doc(user!.uid)
+                            //       .collection('dates')
+                            //       .doc(justDate)
+                            //       .collection('meals')
+                            //       .doc(mealSelction!)
+                            //       .set({
+                            //     'mealName': mealSelction,
+                            //   }, SetOptions(merge: true));
+
+                            //   await FirebaseFirestore.instance
+                            //       .collection('users')
+                            //       .doc(user.uid)
+                            //       .collection('dates')
+                            //       .doc(justDate)
+                            //       .collection('meals')
+                            //       .doc(mealSelction!)
+                            //       .collection('foods')
+                            //       .add(foodData);
+
+                            //   await FirebaseFirestore.instance
+                            //       .collection('users')
+                            //       .doc(user.uid)
+                            //       .collection('foodHistory')
+                            //       .doc(foodName)
+                            //       .set({
+                            //     'foodName': foodName ?? 'Unknown food',
+                            //     'fat': fat ?? 0,
+                            //     'protein': protein ?? 0,
+                            //     'carbs': carbs ?? 0,
+                            //     'timeStamp': FieldValue.serverTimestamp(),
+                            //   });
+
+                            //   ScaffoldMessenger.of(context)
+                            //       .showSnackBar(SnackBar(
+                            //     content: Text(
+                            //       'Food Logged Successfully!',
+                            //     ),
+                            //   )); // Clear the form and selection
+                            //   _formKey.currentState?.reset();
+                            //   foodNameController.clear();
+                            //   fatController.clear();
+                            //   proteinController.clear();
+                            //   carbsController.clear();
+
+                            //   setState(() {
+                            //     mealSelction = null;
+                            //   });
+                            // } catch (e) {
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     SnackBar(
+                            //         content:
+                            //             Text("Error logging food: $e")),
+                            //   );
+                            // }
                           ],
                         ),
                       ],
