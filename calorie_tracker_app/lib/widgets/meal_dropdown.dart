@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 Widget mealDropdown(String mealName, List<dynamic> foods) {
- 
-
   return Padding(
     padding: const EdgeInsets.symmetric(
       horizontal: 20,
@@ -44,10 +42,6 @@ Widget mealDropdown(String mealName, List<dynamic> foods) {
                             color: Colors.white,
                             fontSize: 17,
                             fontWeight: FontWeight.w600),
-                      ),
-                      leading: Text(
-                        "IDK",
-                        style: TextStyle(color: Colors.white),
                       ),
                       // This will icon will display a dropdown to delete a food item
                       trailing: Icon(
