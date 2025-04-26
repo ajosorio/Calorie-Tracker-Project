@@ -1,4 +1,4 @@
-// ignore_for_file: unused_import, avoid_print
+// ignore_for_file: unused_import, avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -186,7 +186,9 @@ class _SignupScreenState extends State<SignupScreen> {
       // are determined to be invalid, e.g., the email doesn't exist.
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email!, password: password!);
-      print("Created account ${credential.user}");
+      print(
+        "Created account ${credential.user}",
+      );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
           'Account created successfully!',

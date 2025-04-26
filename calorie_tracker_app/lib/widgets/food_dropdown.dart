@@ -33,16 +33,18 @@ Widget foodDropdown(
                       title: Text(
                         foods[index].foodName,
                         style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 17),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 17,
+                        ),
                       ),
                       subtitle: Text(
                         "F: ${foods[index].fat} P: ${foods[index].protein} C: ${foods[index].carbs}",
                         style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600),
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       // This will icon will display a dropdown to delete a food item
                       trailing: IconButton(
@@ -52,7 +54,10 @@ Widget foodDropdown(
                           color: Colors.white,
                           size: 40,
                         ),
-                        onPressed: () => onFoodSelected(foods[index], true),
+                        onPressed: () => onFoodSelected(
+                          foods[index],
+                          true,
+                        ),
                       ),
                     );
                   },

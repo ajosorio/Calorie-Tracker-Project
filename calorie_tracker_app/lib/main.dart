@@ -57,14 +57,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // NOT NEEDED AS OF NOW
-  // final List<Widget> _pages = <Widget>[
-  //   const HomeScreen(),
-  //   const AddFoodScreen(),
-  //   const PreviouslyLoggedDaysScreen(),
-  //   const LoginScreen()
-  // ];
-
   List<Meal> meals = [
     Meal("Breakfast", []),
     Meal("Lunch", []),
@@ -148,15 +140,16 @@ class _HomeScreenState extends State<HomeScreen> {
             .collection('foods')
             .get();
 
-        final foods =
-            foodSnapshot.docs.map((foodDoc) => foodDoc.data()).toList();
-
-        for (var food in foods) {
-          foodList.add(Food(
-              foodName: food['foodName'],
-              protein: food['protein'],
-              carbs: food['carbs'],
-              fat: food['fat']));
+        for (var foodDoc in foodSnapshot.docs) {
+          var foodData = foodDoc.data();
+          var food = Food(
+            foodName: foodData['foodName'],
+            protein: foodData['protein'],
+            carbs: foodData['carbs'],
+            fat: foodData['fat'],
+            docId: foodDoc.id, // ✅ Now setting docId too
+          );
+          foodList.add(food);
         }
 
         fetchedMeals.add(Meal(mealName, foodList));
@@ -231,20 +224,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // pie chart or message if no data
                           SizedBox(
-                            height: 250,
-                            width: 230,
+                            height: 200,
+                            width: 200,
                             child: noData
                                 ? const Center(
                                     child: Text(
                                       "No data to display for today.",
                                       style: TextStyle(
-                                          color: Colors.white70, fontSize: 16),
+                                        color: Colors.white70,
+                                        fontSize: 16,
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
                                   )
                                 : MyPieChart(dataMap: dataMap),
                           ),
-                          const SizedBox(width: 20),
+                          const SizedBox(
+                            width: 20,
+                          ),
                           // column displaying macro breakdown as text
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,11 +253,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     "Protein: ${totalProtein.toInt()}g",
                                     style: const TextStyle(
-                                        fontSize: 14, color: Colors.white),
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(
+                                height: 5,
+                              ),
                               Row(
                                 children: [
                                   const Icon(Icons.square,
@@ -268,43 +269,82 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     "Carbs: ${totalCarbs.toInt()}g",
                                     style: const TextStyle(
-                                        fontSize: 14, color: Colors.white),
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(
+                                height: 5,
+                              ),
                               Row(
                                 children: [
-                                  const Icon(Icons.square,
-                                      color:
-                                          Color.fromARGB(255, 129, 181, 233)),
+                                  const Icon(
+                                    Icons.square,
+                                    color: Color.fromARGB(255, 129, 181, 233),
+                                  ),
                                   Text(
                                     "Fats: ${totalFats.toInt()}g",
                                     style: const TextStyle(
-                                        fontSize: 14, color: Colors.white),
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 5),
+                              const SizedBox(
+                                height: 5,
+                              ),
                               Text(
-                                "Calories: ${calories.toInt()} kcal",
+                                "Calories: ${calories.toInt()}",
                                 style: const TextStyle(
-                                    fontSize: 14, color: Colors.white),
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
                               ),
                             ],
                           ),
                         ],
                       ),
                     ),
-                    Divider(thickness: 7, color: Colors.teal),
+                    Divider(
+                      thickness: 7,
+                      color: Colors.teal,
+                    ),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: meals.length,
                       itemBuilder: (context, index) {
                         return mealDropdown(
-                          meals[index].getMealName!.toUpperCase(),
+                          meals[index].getMealName!,
                           meals[index].getFoodList,
+                          deleteFoodCallback: (mealName, docId) async {
+                            final user = FirebaseAuth.instance.currentUser;
+                            final justDate =
+                                "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+
+                            final foodRef = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user!.uid)
+                                .collection('dates')
+                                .doc(justDate)
+                                .collection('meals')
+                                .doc(mealName)
+                                .collection('foods')
+                                .doc(docId);
+
+                            await FirebaseFirestore.instance
+                                .runTransaction((transaction) async {
+                              transaction.delete(foodRef);
+                            });
+
+                            print("Deleted food $docId successfully.");
+
+                            await fetchFoods(); // re-fetch meals
+                            setState(() {}); // refresh UI
+                          },
                         );
                       },
                     )
@@ -322,23 +362,39 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: _selectedIndex == 0
           ? BottomNavigationBar(
               backgroundColor: Colors.teal,
-              selectedLabelStyle: const TextStyle(color: Colors.white),
-              unselectedLabelStyle: const TextStyle(color: Colors.white),
+              selectedLabelStyle: const TextStyle(
+                color: Colors.white,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                color: Colors.white,
+              ),
               items: const [
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.home, color: Colors.white),
+                  icon: Icon(
+                    Icons.home,
+                    color: Colors.white,
+                  ),
                   label: "Home",
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.add, color: Colors.white),
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
                   label: "Add Food",
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_today, color: Colors.white),
+                  icon: Icon(
+                    Icons.calendar_today,
+                    color: Colors.white,
+                  ),
                   label: "Previous",
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.logout, color: Colors.white),
+                  icon: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                  ),
                   label: "Log Out",
                 ),
               ],
@@ -353,15 +409,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
+                        builder: (context) => const LoginScreen(),
+                      ),
                       (route) => false,
                     );
                   }
                 } else if (value == 1) {
                   // Go to Add Food screen, then refresh on return
                   Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (context) => const AddFoodScreen()))
+                      .push(
+                    MaterialPageRoute(
+                      builder: (context) => const AddFoodScreen(),
+                    ),
+                  )
                       .then((_) async {
                     await intializeMealsAndFetchFoods();
                     setState(() {
@@ -385,50 +445,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-        // color: Colors.teal,
-        // child: Row(
-        // mainAxisAlignment: MainAxisAlignment.spaceAround,
-        // children: [
-        //   IconButton(
-        //       icon: const Icon(
-        //         Icons.home,
-        //         color: Colors.white,
-        //       ),
-        //       onPressed: () {}),
-        //   IconButton(
-        //     icon: const Icon(Icons.add, color: Colors.white, size: 32),
-        //     onPressed: () {
-        //       Navigator.of(context)
-        //           .push(MaterialPageRoute(
-        //             builder: (context) => const AddFoodScreen(),
-        //           ))
-        //           .then((_) => fetchFoods());
-        //     },
-        //   ),
-        //   IconButton(
-        //     icon: const Icon(Icons.calendar_today, color: Colors.white),
-        //     onPressed: () {
-        //       Navigator.of(context).push(
-        //         MaterialPageRoute(
-        //           builder: (context) => const PreviouslyLoggedDaysScreen(),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        //   IconButton(
-        //     icon: const Icon(Icons.logout, color: Colors.white),
-        //     onPressed: () {
-        //       Navigator.of(context).push(
-        //         MaterialPageRoute(
-        //           builder: (context) => const LoginScreen(),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        //],
-        //),
-//       ),
-//     );
-//   }
-// }

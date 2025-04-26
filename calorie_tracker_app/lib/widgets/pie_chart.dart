@@ -20,7 +20,7 @@ class MyPieChart extends StatelessWidget {
     return PieChart(
       // macro data for visualization
       dataMap: dataMap,
-      chartRadius: 200,
+      chartRadius: 215,
       centerText: "Macros",
       ringStrokeWidth: 16,
       animationDuration: const Duration(

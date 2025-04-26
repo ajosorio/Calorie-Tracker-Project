@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,13 +40,19 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No user signed in.")),
+        const SnackBar(
+          content: Text("No user signed in."),
+        ),
       );
       return;
     }
     if (mealSelction == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a meal.")),
+        const SnackBar(
+          content: Text(
+            "Please select a meal.",
+          ),
+        ),
       );
       return;
     }
@@ -65,7 +71,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     try {
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(user!.uid)
+          .doc(user.uid)
           .collection('dates')
           .doc(justDate)
           .collection('meals')
@@ -90,19 +96,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
             .doc(user.uid)
             .collection('foodHistory')
             .doc(foodName)
-            .set({
-          'foodName': foodName ?? 'Unknown food',
-          'fat': fat ?? 0,
-          'protein': protein ?? 0,
-          'carbs': carbs ?? 0,
-          'timeStamp': FieldValue.serverTimestamp(),
-        });
+            .set(
+          {
+            'foodName': foodName ?? 'Unknown food',
+            'fat': fat ?? 0,
+            'protein': protein ?? 0,
+            'carbs': carbs ?? 0,
+            'timeStamp': FieldValue.serverTimestamp(),
+          },
+        );
 
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text(
-        //     'Food Logged Successfully!',
-        //   ),
-        // )); // Clear the form and selection
         _formKey.currentState?.reset();
         foodNameController.clear();
         fatController.clear();
@@ -121,12 +124,18 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error logging food: $e")),
+        SnackBar(
+          content: Text(
+            "Error logging food: $e",
+          ),
+        ),
       );
     }
 
     setState(() {});
-    print("Added ${food.foodName} to the day's list.");
+    print(
+      "Added ${food.foodName} to the day's list.",
+    );
   }
 
   /// Fetches all previous logged foods for a user within their foodHistory collection. This is subject to change to foods previously logged through an arbitrary amount of time.
@@ -152,7 +161,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         localResults = previousFoods;
       });
     } catch (e) {
-      print("Error fetching previous foods: $e");
+      print(
+        "Error fetching previous foods: $e",
+      );
     }
   }
 
@@ -161,10 +172,16 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       if (query.isEmpty) {
         localResults = previousFoods;
       } else {
-        localResults = previousFoods.where((food) {
-          final foodName = food.foodName.toLowerCase();
-          return foodName.contains(query.toLowerCase());
-        }).toList();
+        localResults = previousFoods.where(
+          (
+            food,
+          ) {
+            final foodName = food.foodName.toLowerCase();
+            return foodName.contains(
+              query.toLowerCase(),
+            );
+          },
+        ).toList();
       }
     });
   }
@@ -191,7 +208,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
             children: [
               Text(
                 "Search previous foods",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
               ),
               TextField(
                 style: TextStyle(
@@ -211,19 +231,33 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                     ),
                   ),
                   hintText: "Enter a food",
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
                 onChanged: (value) {
-                  localQuery(controller.text);
-                  print('Food searched for is: ${controller.text}');
+                  localQuery(
+                    controller.text,
+                  );
+                  print(
+                    'Food searched for is: ${controller.text}',
+                  );
                 },
               ),
-              foodDropdown("Previously Logged", localResults,
-                  (food, previous) => addFoodForTheDay(food, previous)),
+              foodDropdown(
+                "Previously Logged",
+                localResults,
+                (food, previous) => addFoodForTheDay(
+                  food,
+                  previous,
+                ),
+              ),
               Form(
                 key: _formKey,
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(
+                    24.0,
+                  ),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,9 +267,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             Text(
                               "Meal:",
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600),
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -296,7 +331,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                             )
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         // Food name input with scan button
                         Row(
                           children: [
@@ -324,7 +361,9 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     ),
                                   ),
                                 ),
-                                onChanged: (value) {},
+                                onChanged: (
+                                  value,
+                                ) {},
                               ),
                             ),
                             const SizedBox(
@@ -423,7 +462,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                 if (mealSelction == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                        content: Text('Please Select A Meal')),
+                                      content: Text(
+                                        'Please Select A Meal',
+                                      ),
+                                    ),
                                   );
                                   return;
                                 }
@@ -439,8 +481,10 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                     carbs == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                        content:
-                                            Text('Please Fill All Fields')),
+                                      content: Text(
+                                        'Please Fill All Fields',
+                                      ),
+                                    ),
                                   );
                                   return;
                                 }
@@ -460,76 +504,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                 style: TextStyle(color: Colors.teal),
                               ),
                             ),
-
-                            // final user = FirebaseAuth.instance.currentUser;
-                            // final now = DateTime.now();
-                            // final justDate =
-                            //     "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
-
-                            // final foodData = {
-                            //   'foodName': foodName ?? 'Unknown food',
-                            //   'fat': fat ?? 0,
-                            //   'protein': protein ?? 0,
-                            //   'carbs': carbs ?? 0,
-                            // };
-
-                            // try {
-                            //   await FirebaseFirestore.instance
-                            //       .collection('users')
-                            //       .doc(user!.uid)
-                            //       .collection('dates')
-                            //       .doc(justDate)
-                            //       .collection('meals')
-                            //       .doc(mealSelction!)
-                            //       .set({
-                            //     'mealName': mealSelction,
-                            //   }, SetOptions(merge: true));
-
-                            //   await FirebaseFirestore.instance
-                            //       .collection('users')
-                            //       .doc(user.uid)
-                            //       .collection('dates')
-                            //       .doc(justDate)
-                            //       .collection('meals')
-                            //       .doc(mealSelction!)
-                            //       .collection('foods')
-                            //       .add(foodData);
-
-                            //   await FirebaseFirestore.instance
-                            //       .collection('users')
-                            //       .doc(user.uid)
-                            //       .collection('foodHistory')
-                            //       .doc(foodName)
-                            //       .set({
-                            //     'foodName': foodName ?? 'Unknown food',
-                            //     'fat': fat ?? 0,
-                            //     'protein': protein ?? 0,
-                            //     'carbs': carbs ?? 0,
-                            //     'timeStamp': FieldValue.serverTimestamp(),
-                            //   });
-
-                            //   ScaffoldMessenger.of(context)
-                            //       .showSnackBar(SnackBar(
-                            //     content: Text(
-                            //       'Food Logged Successfully!',
-                            //     ),
-                            //   )); // Clear the form and selection
-                            //   _formKey.currentState?.reset();
-                            //   foodNameController.clear();
-                            //   fatController.clear();
-                            //   proteinController.clear();
-                            //   carbsController.clear();
-
-                            //   setState(() {
-                            //     mealSelction = null;
-                            //   });
-                            // } catch (e) {
-                            //   ScaffoldMessenger.of(context).showSnackBar(
-                            //     SnackBar(
-                            //         content:
-                            //             Text("Error logging food: $e")),
-                            //   );
-                            // }
                           ],
                         ),
                       ],

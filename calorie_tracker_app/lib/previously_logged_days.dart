@@ -75,7 +75,10 @@ class _PreviouslyLoggedDaysScreenState
       appBar: AppBar(
         title: const Text(
           "Previously Logged Days",
-          style: TextStyle(color: Colors.white, fontSize: 28),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.teal,
@@ -85,13 +88,20 @@ class _PreviouslyLoggedDaysScreenState
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-                child: CircularProgressIndicator(color: Colors.teal));
+              child: CircularProgressIndicator(
+                color: Colors.teal,
+              ),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-              child: Text("No meals logged yet.",
-                  style: TextStyle(color: Colors.white)),
+              child: Text(
+                "No meals logged yet.",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             );
           }
 
@@ -100,57 +110,73 @@ class _PreviouslyLoggedDaysScreenState
             ..sort((a, b) => b.compareTo(a)); // newest first
 
           return ListView(
-            children: sortedDates.map((date) {
-              final meals = data[date]!;
+            children: sortedDates.map(
+              (
+                date,
+              ) {
+                final meals = data[date]!;
 
-              return ExpansionTile(
-                title: Text(
-                  date,
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                backgroundColor: Colors.grey[900],
-                collapsedBackgroundColor: Colors.black,
-                iconColor: Colors.teal,
-                collapsedIconColor: Colors.teal,
-                children: meals.entries.map((entry) {
-                  final mealName = entry.key;
-                  final foods = entry.value;
-
-                  return ExpansionTile(
-                    title: Text(
-                      mealName,
-                      style: const TextStyle(color: Colors.teal),
+                return ExpansionTile(
+                  title: Text(
+                    date,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    backgroundColor: Colors.black,
-                    collapsedBackgroundColor: Colors.grey[850],
-                    iconColor: Colors.white,
-                    collapsedIconColor: Colors.white,
-                    children: foods.isEmpty
-                        ? [
-                            const ListTile(
-                              title: Text(
-                                "No foods logged",
-                                style: TextStyle(color: Colors.white54),
-                              ),
-                            )
-                          ]
-                        : foods.map((food) {
-                            return ListTile(
-                              title: Text(
-                                food['foodName'] ?? 'Unnamed Food',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              subtitle: Text(
-                                "Fat: ${food['fat']}g, Protein: ${food['protein']}g, Carbs: ${food['carbs']}g",
-                                style: const TextStyle(color: Colors.white70),
-                              ),
-                            );
-                          }).toList(),
-                  );
-                }).toList(),
-              );
-            }).toList(),
+                  ),
+                  backgroundColor: Colors.grey[900],
+                  collapsedBackgroundColor: Colors.black,
+                  iconColor: Colors.teal,
+                  collapsedIconColor: Colors.teal,
+                  children: meals.entries.map(
+                    (entry) {
+                      final mealName = entry.key;
+                      final foods = entry.value;
+
+                      return ExpansionTile(
+                        title: Text(
+                          mealName,
+                          style: const TextStyle(
+                            color: Colors.teal,
+                          ),
+                        ),
+                        backgroundColor: Colors.black,
+                        collapsedBackgroundColor: Colors.grey[850],
+                        iconColor: Colors.white,
+                        collapsedIconColor: Colors.white,
+                        children: foods.isEmpty
+                            ? [
+                                const ListTile(
+                                  title: Text(
+                                    "No foods logged",
+                                    style: TextStyle(color: Colors.white54),
+                                  ),
+                                )
+                              ]
+                            : foods.map(
+                                (food) {
+                                  return ListTile(
+                                    title: Text(
+                                      food['foodName'] ?? 'Unnamed Food',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      "Fat: ${food['fat']}g, Protein: ${food['protein']}g, Carbs: ${food['carbs']}g",
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ).toList(),
+                      );
+                    },
+                  ).toList(),
+                );
+              },
+            ).toList(),
           );
         },
       ),

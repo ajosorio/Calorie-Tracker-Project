@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
-Widget mealDropdown(String mealName, List<dynamic> foods) {
- 
-
+// display dropdown list of meals
+Widget mealDropdown(
+  String mealName,
+  List<dynamic> foods, {
+  required Future<void> Function(String mealName, String docId)
+      deleteFoodCallback,
+}) {
   return Padding(
     padding: const EdgeInsets.symmetric(
       horizontal: 20,
@@ -34,26 +38,31 @@ Widget mealDropdown(String mealName, List<dynamic> foods) {
                       title: Text(
                         foods[index].foodName,
                         style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 17),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 17,
+                        ),
                       ),
                       subtitle: Text(
                         "F: ${foods[index].fat} P: ${foods[index].protein} C: ${foods[index].carbs}",
                         style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600),
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      leading: Text(
-                        "IDK",
-                        style: TextStyle(color: Colors.white),
-                      ),
+
                       // This will icon will display a dropdown to delete a food item
                       trailing: Icon(
                         Icons.delete_outlined,
                         color: Colors.white,
                       ),
+                      onTap: () async {
+                        await deleteFoodCallback(
+                          mealName,
+                          foods[index].docId!,
+                        );
+                      },
                     );
                   },
                   separatorBuilder: (
