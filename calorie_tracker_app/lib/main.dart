@@ -336,9 +336,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .runTransaction((transaction) async {
                               transaction.delete(foodRef);
                             });
-                          
+
                             await fetchFoods(); // re-fetch meals
-                            setState(() {}); // refresh UI
+
+                            setState(() {});
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                'Food successfully deleted',
+                              ),
+                              duration: Duration(seconds: 2),
+                            )); // refresh UI
                           },
                         );
                       },

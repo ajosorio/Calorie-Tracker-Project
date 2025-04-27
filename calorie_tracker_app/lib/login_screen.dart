@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (e.code == 'wrong-password') {
         error = 'Wrong password provided for that user.';
       } else {
-        error = 'An error occurred: ${e.message}';
+        error = 'Invalid login credentials';
       }
 
       // Call setState to redraw the widget, which will display

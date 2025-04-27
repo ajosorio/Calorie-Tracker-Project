@@ -52,6 +52,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
           content: Text(
             "Please select a meal.",
           ),
+          duration: Duration(seconds: 2),
         ),
       );
       return;
@@ -117,6 +118,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
         content: Text(
           'Food Logged Successfully!',
         ),
+        duration: Duration(seconds: 2),
       )); // Clear
 
       setState(() {
@@ -459,6 +461,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                       content: Text(
                                         'Please Select A Meal',
                                       ),
+                                      duration: Duration(seconds: 2),
                                     ),
                                   );
                                   return;
@@ -478,6 +481,7 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                       content: Text(
                                         'Please Fill All Fields',
                                       ),
+                                      duration: Duration(seconds: 2),
                                     ),
                                   );
                                   return;
@@ -490,7 +494,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                                   protein: protein!,
                                 );
 
-                                // ✅ Only call the logger, which handles the SnackBar
                                 addFoodForTheDay(food, false);
                               },
                               child: const Text(
