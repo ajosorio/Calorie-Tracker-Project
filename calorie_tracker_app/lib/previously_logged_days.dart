@@ -28,9 +28,6 @@ class _PreviouslyLoggedDaysScreenState
         .collection('dates')
         .get();
 
-    // prints how many dates are retrieved for trouble shooting
-    print('Total dates found: ${dateSnapshots.docs.length}');
-
     for (final dateDoc in dateSnapshots.docs) {
       final date = dateDoc.id;
       final Map<String, List<Map<String, dynamic>>> meals = {};

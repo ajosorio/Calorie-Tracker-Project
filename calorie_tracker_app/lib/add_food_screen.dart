@@ -133,9 +133,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
     }
 
     setState(() {});
-    print(
-      "Added ${food.foodName} to the day's list.",
-    );
   }
 
   /// Fetches all previous logged foods for a user within their foodHistory collection. This is subject to change to foods previously logged through an arbitrary amount of time.
@@ -238,9 +235,6 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
                 onChanged: (value) {
                   localQuery(
                     controller.text,
-                  );
-                  print(
-                    'Food searched for is: ${controller.text}',
                   );
                 },
               ),

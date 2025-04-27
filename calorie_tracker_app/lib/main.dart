@@ -108,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
         c++;
         setState(() {});
       }
-      print('meals initialized');
     } catch (e) {
       print('Error initializing meals: $e');
     }
@@ -165,11 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // print out all foods (for debugging)
-    for (var meal in meals) {
-      print(meal.getFoodList);
-    }
-
     // sum the macros for the current day from all meals
     double totalProtein = 0;
     double totalCarbs = 0;
@@ -342,9 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .runTransaction((transaction) async {
                               transaction.delete(foodRef);
                             });
-
-                            print("Deleted food $docId successfully.");
-
+                          
                             await fetchFoods(); // re-fetch meals
                             setState(() {}); // refresh UI
                           },

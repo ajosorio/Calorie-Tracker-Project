@@ -184,11 +184,8 @@ class _SignupScreenState extends State<SignupScreen> {
       //
       // FirebaseAuth will raise an exception if the email or password
       // are determined to be invalid, e.g., the email doesn't exist.
-      final credential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email!, password: password!);
-      print(
-        "Created account ${credential.user}",
-      );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
           'Account created successfully!',

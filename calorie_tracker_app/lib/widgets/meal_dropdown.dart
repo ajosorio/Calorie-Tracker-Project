@@ -29,8 +29,7 @@ Widget mealDropdown(
         SizedBox(
           height: foods.isNotEmpty ? 200 : 60,
           child: foods.isNotEmpty
-              ? ListView.separated(
-                  // this will be set to print all the food objects for the respective meal
+              ? ListView.separated(                
                   itemCount: foods.length,
                   itemBuilder: (context, index) {
                     return ListTile(

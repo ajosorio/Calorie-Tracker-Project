@@ -8,7 +8,7 @@ class Food {
   int _sugar = 0;
   int _fiber = 0;
   String _foodName = "food";
-  String? _docId; // ✅ Add this
+  String? _docId; 
 
   Food({
     int protein = 0,
@@ -18,7 +18,7 @@ class Food {
     int sugar = 0,
     int fiber = 0,
     String foodName = "food",
-    String? docId, // ✅ Add this too
+    String? docId, 
   })  : _protein = protein,
         _carbs = carbs,
         _fat = fat,
@@ -26,7 +26,7 @@ class Food {
         _sugar = sugar,
         _fiber = fiber,
         _foodName = foodName,
-        _docId = docId; // ✅
+        _docId = docId; 
 
   String get foodName => _foodName;
   set foodName(String value) => _foodName = value;
@@ -49,7 +49,6 @@ class Food {
   int get fiber => _fiber;
   set fiber(int value) => _fiber = value;
 
-  // ✅ Add getter and setter for docId
   String? get docId => _docId;
   set docId(String? value) => _docId = value;
 }

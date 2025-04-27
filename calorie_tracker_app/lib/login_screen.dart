@@ -148,11 +148,10 @@ class _LoginScreenState extends State<LoginScreen> {
       //
       // FirebaseAuth will raise an exception if the email or password
       // are determined to be invalid, e.g., the email doesn't exist.
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email!,
         password: password!,
       );
-      print("Logged in ${credential.user}");
       error = null; // clear the error message if exists.
       setState(() {}); // Trigger a rebuild
 
