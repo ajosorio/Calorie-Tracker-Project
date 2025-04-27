@@ -69,7 +69,7 @@ Widget foodDropdown(
                 )
               : const Center(
                   child: Text(
-                    'NO DATA',
+                    'NO FOODS LOGGED',
                     style: TextStyle(
                       color: Colors.white,
                     ),

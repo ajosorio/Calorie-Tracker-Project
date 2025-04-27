@@ -71,9 +71,9 @@ Widget mealDropdown(
                   ) =>
                       const Divider(),
                 )
-              : const Center(
+              : Center(
                   child: Text(
-                    'NO DATA',
+                    'NO FOODS LOGGED YET',
                     style: TextStyle(
                       color: Colors.white,
                     ),

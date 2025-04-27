@@ -253,9 +253,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     "Protein: ${totalProtein.toInt()}g",
                                     style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600),
                                   ),
                                 ],
                               ),
@@ -269,8 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     "Carbs: ${totalCarbs.toInt()}g",
                                     style: const TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 16,
                                       color: Colors.white,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
@@ -287,8 +288,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     "Fats: ${totalFats.toInt()}g",
                                     style: const TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 16,
                                       color: Colors.white,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
@@ -299,8 +301,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 "Calories: ${calories.toInt()}",
                                 style: const TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   color: Colors.white,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
