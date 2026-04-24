@@ -1,22 +1,23 @@
 # Calorie Tracker App
 
-A mobile calorie tracking application built with :contentReference[oaicite:0]{index=0} and :contentReference[oaicite:1]{index=1} that allows users to log meals, monitor daily calorie intake, and visualize nutrition progress over time.
+A mobile calorie tracking application built with Flutter and Firebase that allows users to log meals, monitor daily calorie intake, and view nutrition progress over time.
 
 ## Features
 
-- Secure user authentication
+- User authentication
 - Daily meal and calorie logging
 - Macronutrient tracking
-- Historical progress view
-- Charts and analytics dashboard
-- Cloud-backed data storage
+- Meal history
+- Nutrition charts and visualizations
+- Cloud-backed data storage with Firestore
 
 ## Tech Stack
 
-- Flutter / Dart
+- Flutter
+- Dart
 - Firebase Authentication
-- Firestore Database
-- Charts / Data Visualization
+- Cloud Firestore
+- Charts / data visualization
 
 ## Demo Access
 
@@ -28,4 +29,3 @@ Demo account available upon request.
 - Personalized calorie goals
 - AI meal recommendations
 - AWS backend migration
-
