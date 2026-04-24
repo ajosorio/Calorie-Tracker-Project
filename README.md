@@ -1,7 +1,31 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/u2GKD8cn)
-This app was developed primarily for ios using an iPhone 16 Pro.
+# Calorie Tracker App
 
-App login:
-coolguy@gmail.com
-Pass:
-coolguy1
+A mobile calorie tracking application built with :contentReference[oaicite:0]{index=0} and :contentReference[oaicite:1]{index=1} that allows users to log meals, monitor daily calorie intake, and visualize nutrition progress over time.
+
+## Features
+
+- Secure user authentication
+- Daily meal and calorie logging
+- Macronutrient tracking
+- Historical progress view
+- Charts and analytics dashboard
+- Cloud-backed data storage
+
+## Tech Stack
+
+- Flutter / Dart
+- Firebase Authentication
+- Firestore Database
+- Charts / Data Visualization
+
+## Demo Access
+
+Demo account available upon request.
+
+## Future Improvements
+
+- Barcode scanning
+- Personalized calorie goals
+- AI meal recommendations
+- AWS backend migration
+
